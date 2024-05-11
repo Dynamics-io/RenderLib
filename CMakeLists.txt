@@ -41,7 +41,7 @@ endif()
 # globally add VKB_DEBUG for the debug build
 add_compile_definitions($<$<CONFIG:DEBUG>:VKB_DEBUG>)
 
-project(vulkan_samples)
+project(RenderLibrary)
 
 if(MSVC AND (DEFINED CMAKE_C_COMPILER_LAUNCHER))
     message(DEBUG "Setting MSVC flags to /Z7 for ccache compatibility.  Current flags: ${CMAKE_CXX_FLAGS_DEBUG}")

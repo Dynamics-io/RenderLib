@@ -79,6 +79,10 @@ target_include_directories(imgui SYSTEM PUBLIC ${IMGUI_DIR})
 
 set_target_properties(imgui PROPERTIES FOLDER "ThirdParty" POSITION_INDEPENDENT_CODE ON)
 
+# fmt
+add_subdirectory(fmt)
+set_property(TARGET fmt PROPERTY FOLDER "ThirdParty")
+
 # spdlog
 set(SPDLOG_FMT_EXTERNAL ON)
 add_subdirectory(spdlog)
