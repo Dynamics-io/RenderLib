@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <GLFW/glfw3native.h>
 
+//#include <stdexcept>
+
 #include "input_events.h"
 
 using namespace render_vk;
@@ -51,7 +53,7 @@ Window_GLFW_p::Window_GLFW_p(const Window_Properties& properties) :
 
 	if (!glfwInit())
 	{
-		throw std::runtime_error("GLFW couldn't be initialized.");
+		//throw std::runtime_error("GLFW couldn't be initialized.");
 	}
 
 	glfwSetErrorCallback(static_error_callback);
@@ -80,7 +82,7 @@ Window_GLFW_p::Window_GLFW_p(const Window_Properties& properties) :
 
 		case Window_Mode::FullscreenStretch:
 		{
-			throw std::runtime_error("Cannot support stretch mode on this platform.");
+			//throw std::runtime_error("Cannot support stretch mode on this platform.");
 			break;
 		}
 
@@ -92,7 +94,7 @@ Window_GLFW_p::Window_GLFW_p(const Window_Properties& properties) :
 	resize(Window_Extent{ properties.extent.width, properties.extent.height });
 
 	if (!handle) {
-		throw std::runtime_error("Couldn't create glfw window.");
+		//throw std::runtime_error("Couldn't create glfw window.");
 	}
 
 	glfwSetWindowUserPointer(handle, this);
