@@ -19,10 +19,18 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <unordered_map>
 
 namespace render_vk
 {
 	namespace input {
+
+		typedef void (*OnWindowErrorActionPtr)(void*, std::string error);
+		typedef void (*OnResizeActionPtr)(void*, uint32_t width, uint32_t height);
+		typedef void (*OnFocusActionPtr)(void*, int focused);
+		typedef void (*OnKeyInputActionPtr)(void*, KeyInputEvent key_event);
+		typedef void (*OnMouseButtonInputActionPtr)(void*, MouseButtonInputEvent mouse_event);
+
 		//class Platform;
 
 		enum class EventSource
@@ -273,5 +281,8 @@ namespace render_vk
 
 			float pos_y{0};
 		};
-	}        // namespace vkb
+
+
+
+	}
 }

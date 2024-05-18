@@ -1,1 +1,1 @@
-git submodule add https://github.com/fmtlib/fmt third_party/fmt
+git submodule add https://github.com/nothings/stb third_party/stb

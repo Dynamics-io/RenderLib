@@ -10,7 +10,7 @@ set(${PROJECT_NAME}_sources
     exe_main.cpp
 )
 
-add_executable(${PROJECT_NAME} WIN32 ${${PROJECT_NAME}_sources})
+add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_sources})
 
 target_link_libraries(${PROJECT_NAME} RenderLib)
 

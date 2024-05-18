@@ -1,0 +1,74 @@
+#pragma once
+
+#include "volk.h"
+#include <string>
+#include <vector>
+
+namespace render_vk {
+
+	/**
+	 * @brief Validates a list of required extensions, comparing it with the available ones.
+	 *
+	 * @param required A vector containing required extension names.
+	 * @param available A VkExtensionProperties object containing available extensions.
+	 * @return true if all required extensions are available
+	 * @return false otherwise
+	 */
+	bool validate_extensions(
+		const std::vector<const char*>& required,
+		const std::vector<VkExtensionProperties>& available)
+	{
+		for (auto extension : required)
+		{
+			bool found = false;
+			for (auto& available_extension : available)
+			{
+				if (strcmp(available_extension.extensionName, extension) == 0)
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @brief Validates a list of required layers, comparing it with the available ones.
+	 *
+	 * @param required A vector containing required layer names.
+	 * @param available A VkLayerProperties object containing available layers.
+	 * @return true if all required extensions are available
+	 * @return false otherwise
+	 */
+	bool validate_layers(
+		const std::vector<const char*>& required,
+		const std::vector<VkLayerProperties>& available)
+	{
+		for (auto extension : required)
+		{
+			bool found = false;
+			for (auto& available_extension : available)
+			{
+				if (strcmp(available_extension.layerName, extension) == 0)
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+}

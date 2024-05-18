@@ -108,3 +108,7 @@ if (TARGET update_mappings)
 endif()
 
 set_property(TARGET glfw PROPERTY FOLDER "ThirdParty")
+
+# stb
+add_library(stb INTERFACE)
+target_include_directories(stb SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/stb")

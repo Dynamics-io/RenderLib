@@ -14,4 +14,4 @@ set(${PROJECT_NAME}_sources
 
 add_library(RenderLib STATIC ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
 
-target_link_libraries(RenderLib RenderLib_private)
+target_link_libraries(RenderLib PRIVATE RenderLib_private)
