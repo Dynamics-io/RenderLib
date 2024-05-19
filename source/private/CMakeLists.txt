@@ -6,6 +6,7 @@ set(${PROJECT_NAME}_headers
 	vk_logging.h
 	vk_utils.h
 	vk_physical_device.h
+	vk_device.h
 	instance.h
 	window.h
 	window_glfw.h
@@ -19,6 +20,7 @@ set(${PROJECT_NAME}_sources
 	window.cpp
 	instance.cpp
 	vk_physical_device.cpp
+	vk_device.cpp
 	window_glfw.cpp
 	renderer.cpp
 )

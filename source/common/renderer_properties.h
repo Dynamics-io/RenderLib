@@ -13,6 +13,8 @@ struct RendererBuildInfo {
 
 	InstanceBuildInfo Instance_Info;
 
+	std::vector<const char*> Device_Required_Extensions;
+
 };
 
 struct ChildRendererBuildInfo {

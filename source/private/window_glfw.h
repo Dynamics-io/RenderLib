@@ -19,7 +19,7 @@ namespace render_vk {
 
 		Window_GLFW_p(const Window_Properties& properties);
 
-		~Window_GLFW_p(){}
+		~Window_GLFW_p();
 
 		static Window_GLFW_p* Instance() { return p_Instance; }
 
@@ -53,9 +53,9 @@ namespace render_vk {
 			OnMouseButtonInput_delegate.pointer = p;
 		}
 
-		VkSurfaceKHR create_surface(Instance_p& instance) override;
+		VkSurfaceKHR create_surface(Instance_p& instance);
 
-		VkSurfaceKHR create_surface(VkInstance instance, VkPhysicalDevice physical_device) override;
+		VkSurfaceKHR create_surface(VkInstance instance, VkPhysicalDevice physical_device);
 
 		float get_dpi_factor() const { return 0; }
 

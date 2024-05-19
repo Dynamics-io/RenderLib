@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <sstream>
+#include <iostream>
 #include <fmt/format.h>
 
 #define FORMAT(...) fmt::format(__VA_ARGS__)
