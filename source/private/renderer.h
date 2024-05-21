@@ -101,6 +101,13 @@ namespace render_vk {
 			return m_graphics_queue_index;
 		}
 
+		bool Is_Headless() {
+			if (m_Parent != nullptr) {
+				return m_Parent->Is_Headless();
+			}
+			return m_Surface == nullptr;
+		}
+
 		Renderer_p* Get_Parent() {
 			return m_Parent;
 		}
@@ -120,6 +127,8 @@ namespace render_vk {
 		bool Is_Initialized() {
 			return m_Is_Initialized;
 		}
+
+		
 
 	protected:
 		VK_Device_P* Load_Device();

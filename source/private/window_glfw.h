@@ -53,11 +53,11 @@ namespace render_vk {
 			OnMouseButtonInput_delegate.pointer = p;
 		}
 
-		VkSurfaceKHR create_surface(Instance_p& instance);
+		VkSurfaceKHR create_surface(Instance_p* instance);
 
 		VkSurfaceKHR create_surface(VkInstance instance, VkPhysicalDevice physical_device);
 
-		float get_dpi_factor() const { return 0; }
+		float get_dpi_factor() const { return 5; }
 
 		float get_content_scale_factor() const { return 0; }
 

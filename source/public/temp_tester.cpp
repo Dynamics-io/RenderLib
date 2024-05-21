@@ -24,6 +24,10 @@ Tester::~Tester()
 void Tester::Run()
 {
 	RendererBuildInfo info{};
+	info.Window_Enabled = true;
+	info.Window_Title = "Tester";
+	info.Window_Width = 480;
+	info.Window_Height = 480;
 
 	m_traingle_renderer = Renderer_p::Create<Triangle_Renderer_p>(info);
 

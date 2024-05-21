@@ -9,13 +9,20 @@ using namespace render_vk;
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow)
 {
 
+	// Attempt to attach to the parent process console if it exists
+	if (!AttachConsole(ATTACH_PARENT_PROCESS))
+	{
+		// No parent console, allocate a new one for this process
+		if (!AllocConsole())
+		{
+			throw std::runtime_error{ "AllocConsole error" };
+		}
+	}
+
 	Logger log = Logger();
 
 	log.Log_Info("starting");
 
-	Sleep(10000);
-
-	return 0;
 	Tester* tester = new Tester();
 
 	tester->Run();

@@ -17,7 +17,7 @@ namespace render_vk {
 
 		virtual ~Window_base_p() = default;
 
-		virtual VkSurfaceKHR create_surface(Instance_p& instance) = 0;
+		virtual VkSurfaceKHR create_surface(Instance_p* instance) = 0;
 
 		virtual VkSurfaceKHR create_surface(VkInstance instance, VkPhysicalDevice physical_device) = 0;
 

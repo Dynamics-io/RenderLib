@@ -25,9 +25,13 @@ bool Renderer_p::init(RendererBuildInfo info)
 		window_properties.vsync = Vsync::Default;
 		window_properties.title = info.Window_Title;
 
-		m_Window = new Window_GLFW_p(window_properties);
+		LOGI("init 1");
+		m_Window = static_cast<Window_base_p*>(new Window_GLFW_p(window_properties));
+		m_Window->get_dpi_factor();
+		LOGI("init 2: {}", std::to_string(m_Window->get_dpi_factor()));
+		m_Surface = m_Window->create_surface(m_Instance);
+		LOGI("init 3");
 
-		m_Surface = m_Window->create_surface(*m_Instance);
 		m_Window->get_extent();
 
 		if (!m_Surface)
@@ -265,10 +269,11 @@ bool Renderer_p::set_default_device()
 		std::vector<VkQueueFamilyProperties> queue_family_properties = device.Get_Queue_Family_Properties();
 
 		for (uint32_t i = 0; i < queue_family_properties.size(); i++) {
-			VkBool32 supports_present = device.Get_Physical_Device_Surface_Support(m_Surface, i);
+
+			VkBool32 supports_present = Is_Headless() ? 0 : device.Get_Physical_Device_Surface_Support(m_Surface, i);
 
 			// Find a queue family which supports graphics and presentation.
-			if ((queue_family_properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && supports_present)
+			if ((queue_family_properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && (supports_present || Is_Headless()))
 			{
 				m_graphics_queue_index = i;
 				break;

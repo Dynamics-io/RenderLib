@@ -9,6 +9,7 @@
 #include "utils.h"
 
 #include "input_events.h"
+#include "vk_logging.h"
 
 
 using namespace render_vk;
@@ -219,6 +220,8 @@ namespace {
 Window_GLFW_p::Window_GLFW_p(const Window_Properties& properties) :
     Window_base_p(properties)
 {
+	LOGI("Creating GLFW window.");
+
 	p_Instance = this;
 
 	if (!glfwInit())
@@ -281,6 +284,7 @@ Window_GLFW_p::Window_GLFW_p(const Window_Properties& properties) :
 
 	m_key_lookup = create_key_lookup();
 
+	LOGI("GLFW window created.");
 }
 
 Window_GLFW_p::~Window_GLFW_p()
@@ -288,15 +292,19 @@ Window_GLFW_p::~Window_GLFW_p()
 	glfwTerminate();
 }
 
-VkSurfaceKHR render_vk::Window_GLFW_p::create_surface(Instance_p& instance)
+VkSurfaceKHR Window_GLFW_p::create_surface(Instance_p* instance)
 {
-	return create_surface(instance.get_handle(), VK_NULL_HANDLE);
+	LOGI("Creating render surface 1.");
+	return VK_NULL_HANDLE;// create_surface(instance->get_handle(), VK_NULL_HANDLE);
 }
 
-VkSurfaceKHR render_vk::Window_GLFW_p::create_surface(VkInstance instance, VkPhysicalDevice physical_device)
+VkSurfaceKHR Window_GLFW_p::create_surface(VkInstance instance, VkPhysicalDevice physical_device)
 {
+	LOGI("Creating render surface 2.");
+
 	if (instance == VK_NULL_HANDLE || !handle)
 	{
+		LOGE("Failed to create GLFW window: VK Instance null");
 		return VK_NULL_HANDLE;
 	}
 
@@ -305,8 +313,11 @@ VkSurfaceKHR render_vk::Window_GLFW_p::create_surface(VkInstance instance, VkPhy
 	VkResult errCode = glfwCreateWindowSurface(instance, handle, NULL, &surface);
 
 	if (errCode != VK_SUCCESS) {
+		LOGE("Failed to create GLFW window: {}", std::to_string(errCode));
 		return nullptr;
 	}
+
+	LOGI("Render surface created.");
 
 	return surface;
 }
