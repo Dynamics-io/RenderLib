@@ -11,6 +11,9 @@
 
 namespace render_vk {
 
+	typedef void (*OnLogActionPtr)(void*, std::string msg);
+
+
 	/**
 	 * @brief Helper function to convert a data type
 	 *        to string using output stream operator.

@@ -45,14 +45,14 @@ std::vector<VkExtensionProperties> VK_Physical_Device_p::Get_Device_Extension_Pr
 	return device_extensions;
 }
 
-VK_Device* VK_Physical_Device_p::Create_Device(
+VK_Device_P* VK_Physical_Device_p::Create_Device(
 	uint32_t queue_family, uint32_t num_queues, 
 	std::vector<const char*> required_extensions)
 {
 	return Create_Device({ queue_family }, { num_queues }, required_extensions);
 }
 
-VK_Device* VK_Physical_Device_p::Create_Device(
+VK_Device_P* VK_Physical_Device_p::Create_Device(
 	std::vector<uint32_t> queue_families, std::vector<uint32_t> num_queues,
 	std::vector<const char*> required_extensions)
 {
@@ -79,7 +79,7 @@ VK_Device* VK_Physical_Device_p::Create_Device(
 	VK_CHECK_RET(vkCreateDevice(m_device, &device_info, nullptr, &l_device), nullptr);
 	volkLoadDevice(l_device);
 
-	return new VK_Device(l_device);
+	return new VK_Device_P(l_device);
 }
 
 

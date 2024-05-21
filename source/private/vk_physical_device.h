@@ -6,7 +6,7 @@
 namespace render_vk {
 
 	class Instance_p;
-	class VK_Device;
+	class VK_Device_P;
 
 	class VK_Physical_Device_p {
 	public:
@@ -21,10 +21,10 @@ namespace render_vk {
 
 		std::vector<VkExtensionProperties> Get_Device_Extension_Properties();
 
-		VK_Device* Create_Device(uint32_t queue_family, uint32_t num_queues,
+		VK_Device_P* Create_Device(uint32_t queue_family, uint32_t num_queues,
 			std::vector<const char*> required_extensions);
 
-		VK_Device* Create_Device(std::vector<uint32_t> queue_families, std::vector<uint32_t> num_queues,
+		VK_Device_P* Create_Device(std::vector<uint32_t> queue_families, std::vector<uint32_t> num_queues,
 			std::vector<const char*> required_extensions);
 
 	private:

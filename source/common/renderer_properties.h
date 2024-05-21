@@ -5,6 +5,12 @@
 
 #include "instance_properties.h"
 
+enum class RebuildMode {
+	RECURSIVE_CLEANUP,
+	RECURSIVE_BUILD,
+	DEFAULT
+};
+
 struct RendererBuildInfo {
 	bool Window_Enabled;
 	uint32_t Window_Width;

@@ -3,16 +3,18 @@ cmake_minimum_required(VERSION 3.16)
 
 project(RenderApp LANGUAGES C CXX)
 
-#set(${PROJECT_NAME}_headers
-#)
+set(${PROJECT_NAME}_headers
+	logger.h
+)
 
 set(${PROJECT_NAME}_sources
     exe_main.cpp
+	logger.cpp
 )
 
-add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_sources})
+add_executable(${PROJECT_NAME} WIN32 ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
 
-target_link_libraries(${PROJECT_NAME} RenderLib)
+target_link_libraries(${PROJECT_NAME} PRIVATE RenderLib RenderLib_private)
 
 
 if(MSVC)

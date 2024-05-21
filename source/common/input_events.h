@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <unordered_map>
+#include <string>
 
 namespace render_vk
 {

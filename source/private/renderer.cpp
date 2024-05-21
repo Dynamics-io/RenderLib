@@ -10,6 +10,8 @@ using namespace render_vk;
 
 bool Renderer_p::init(RendererBuildInfo info)
 {
+	m_Is_Initialized = false;
+
 	m_BuildInfo = info;
 	m_Instance = Instance_p::Create_Instance(info.Instance_Info);
 
@@ -50,12 +52,18 @@ bool Renderer_p::init(RendererBuildInfo info)
 		LOGE("Failed to load logical device!");
 		return false;
 	}
+
+	m_Is_Initialized = true;
 	
 	return true;
 }
 
-bool Renderer_p::init(ChildRendererBuildInfo info)
+bool Renderer_p::init(Renderer_p* parent, ChildRendererBuildInfo info)
 {
+	m_Parent = parent;
+
+	m_Is_Initialized = true;
+
 	return true;
 }
 
@@ -65,6 +73,179 @@ Renderer_p::Renderer_p()
 
 Renderer_p::~Renderer_p()
 {
+}
+
+bool Renderer_p::Build()
+{
+	if (!Is_Initialized()) {
+		return false;
+	}
+
+	// Don't build if renderer is already setup.
+	if (Is_Setup()) {
+		return true;
+	}
+
+	m_Is_Setup = false;
+
+	bool status = true;
+
+	for (const auto& child : m_child_renderers) {
+		status &= child->Build();
+
+		if (!status) {
+			LOGE("Renderer build failed for child \"{}\" of renderer \"{}\".", child->Get_Name(), Get_Name());
+			break;
+		}
+	}
+
+	status &= Setup();
+
+	if (!status) {
+		LOGE("Renderer setup failed for renderer \"{}\".", Get_Name());
+
+	}
+
+	m_Is_Setup = status;
+
+	return status;
+}
+
+bool Renderer_p::Rebuild()
+{
+	if (!Is_Initialized()) {
+		return false;
+	}
+
+	if (!Is_Setup()) {
+		return false;
+	}
+
+
+	bool status = true;
+
+	status &= Dispose();
+
+	if (!status) {
+		LOGE("Renderer rebuild dispose failed for renderer \"{}\".", Get_Name());
+		return false;
+	}
+
+	status &= Build();
+
+	if (!status) {
+		LOGE("Renderer rebuild setup failed for renderer \"{}\".", Get_Name());
+	}
+
+	return status;
+
+	/*bool status = true;
+
+	if (mode == RebuildMode::RECURSIVE_CLEANUP || mode == RebuildMode::DEFAULT) {
+
+		// Clean up from top-down.
+		status &= Cleanup();
+		m_Is_Setup = false;
+
+		if (!status) {
+			LOGE("Renderer rebuild cleanup failed for renderer \"{}\".", Get_Name());
+			return status;
+		}
+
+		for (const auto& child : m_child_renderers) {
+			status &= child->Rebuild(RebuildMode::RECURSIVE_CLEANUP);
+
+			if (!status) {
+				LOGE("Renderer rebuild cleanup failed for child \"{}\" of renderer \"{}\".", child->Get_Name(), Get_Name());
+				break;
+			}
+		}
+	}
+
+	if (!status) {
+		return false;
+	}
+
+	if (mode == RebuildMode::RECURSIVE_BUILD || mode == RebuildMode::DEFAULT) {
+
+		for (const auto& child : m_child_renderers) {
+			status &= child->Rebuild(RebuildMode::RECURSIVE_BUILD);
+
+			if (!status) {
+				LOGE("Renderer rebuild setup failed for child \"{}\" of renderer \"{}\".", child->Get_Name(), Get_Name());
+				break;
+			}
+		}
+
+		// Build from top-down.
+		status &= Setup();
+
+		if (!status) {
+			LOGE("Renderer rebuild setup failed for renderer \"{}\".", Get_Name());
+		}
+	}
+
+
+	m_Is_Setup = status;
+
+	return status;*/
+}
+
+bool Renderer_p::Dispose()
+{
+	bool status = true;
+
+	// Clean up from top-down.
+
+	status &= Cleanup();
+	m_Is_Setup = false;
+
+	if (!status) {
+		LOGE("Renderer cleanup failed for renderer \"{}\".", Get_Name());
+		return status;
+	}
+
+	for (const auto& child : m_child_renderers) {
+		status &= child->Dispose();
+
+		if (!status) {
+			LOGE("Renderer rebuild cleanup failed for child \"{}\" of renderer \"{}\".", child->Get_Name(), Get_Name());
+			break;
+		}
+	}
+
+	return status;
+}
+
+bool Renderer_p::Update(double dt)
+{
+	if (!Is_Initialized()) {
+		return false;
+	}
+
+	bool status = true;
+
+	for (const auto& child : m_child_renderers) {
+		status &= child->Update(dt);
+
+		if (!status) {
+			LOGE("Renderer update failed for child \"{}\" of renderer \"{}\".", child->Get_Name(), Get_Name());
+			break;
+		}
+	}
+
+	// Update the children, but not this renderer.
+	if (!Is_Setup()) {
+		return false;
+	}
+
+	status &= Step(dt);
+
+	if (!status) {
+		LOGE("Renderer step failed for renderer \"{}\".", Get_Name());
+	}
+
+	return status;
 }
 
 bool Renderer_p::set_default_device()
@@ -112,14 +293,14 @@ bool Renderer_p::set_default_device()
 	return true;
 }
 
-VK_Device* Renderer_p::Load_Device()
+VK_Device_P* Renderer_p::Load_Device()
 {
 	m_Device = m_PhysicalDevice.Create_Device(m_graphics_queue_index, 1, m_BuildInfo.Device_Required_Extensions);
 
 	return m_Device;
 }
 
-template <typename T>
+/*template <typename T>
 Renderer_p* Renderer_p::Create(RendererBuildInfo info)
 {
 	assert(std::is_base_of<Renderer_p, T>::value, "Renderer must derive from Renderer_p");
@@ -132,31 +313,18 @@ Renderer_p* Renderer_p::Create(RendererBuildInfo info)
 	}
 
 	return renderer;
-}
+}*/
 
-template <typename T>
+/*template <typename T>
 Renderer_p* Renderer_p::CreateChildRenderer(ChildRendererBuildInfo info)
 {
 	assert(std::is_base_of<Renderer_p, T>::value, "Renderer must derive from Renderer_p");
 
 	Renderer_p* renderer = static_cast<Renderer_p*>(new T());
 
-	renderer->init(info);
+	renderer->init(this, info);
 	m_child_renderers.push_back(renderer);
 
 	return renderer;
-}
+}*/
 
-void Renderer_p::DoBuild()
-{
-
-}
-
-void Renderer_p::DoRebuild()
-{
-
-}
-
-void Renderer_p::DoUpdate()
-{
-}

@@ -40,6 +40,9 @@ Instance_p::~Instance_p()
 
 Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
 {
+    LOGI("Creating Vulkan instance.");
+
+    volkInitialize(); // TODO: sanity checks
 
     std::vector<const char*> active_instance_extensions(build_info.required_instance_extensions);
     std::vector<VkExtensionProperties> instance_extensions = Get_Instance_Extensions();

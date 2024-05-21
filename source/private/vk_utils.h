@@ -16,28 +16,7 @@ namespace render_vk {
 	 */
 	bool validate_extensions(
 		const std::vector<const char*>& required,
-		const std::vector<VkExtensionProperties>& available)
-	{
-		for (auto extension : required)
-		{
-			bool found = false;
-			for (auto& available_extension : available)
-			{
-				if (strcmp(available_extension.extensionName, extension) == 0)
-				{
-					found = true;
-					break;
-				}
-			}
-
-			if (!found)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
+		const std::vector<VkExtensionProperties>& available);
 
 	/**
 	 * @brief Validates a list of required layers, comparing it with the available ones.
@@ -49,26 +28,5 @@ namespace render_vk {
 	 */
 	bool validate_layers(
 		const std::vector<const char*>& required,
-		const std::vector<VkLayerProperties>& available)
-	{
-		for (auto extension : required)
-		{
-			bool found = false;
-			for (auto& available_extension : available)
-			{
-				if (strcmp(available_extension.layerName, extension) == 0)
-				{
-					found = true;
-					break;
-				}
-			}
-
-			if (!found)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
+		const std::vector<VkLayerProperties>& available);
 }

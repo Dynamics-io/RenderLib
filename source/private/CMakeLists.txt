@@ -12,6 +12,7 @@ set(${PROJECT_NAME}_headers
 	window_glfw.h
 	renderer.h
 	
+	triangle_renderer.h
 	
 )
 
@@ -21,8 +22,12 @@ set(${PROJECT_NAME}_sources
 	instance.cpp
 	vk_physical_device.cpp
 	vk_device.cpp
+	vk_utils.cpp
+	vk_logging.cpp
 	window_glfw.cpp
 	renderer.cpp
+	
+	triangle_renderer.cpp
 )
 
 add_library(RenderLib_private STATIC ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
@@ -35,7 +40,6 @@ target_link_libraries(${PROJECT_NAME}
 		glm
 		vma
 		glfw
-	PRIVATE
 		imgui
 		glm
 		spdlog
