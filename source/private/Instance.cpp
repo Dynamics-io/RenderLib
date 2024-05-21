@@ -42,7 +42,7 @@ Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
 {
     LOGI("Creating Vulkan instance.");
 
-    volkInitialize(); // TODO: sanity checks
+    VK_CHECK_THROW(volkInitialize()); // TODO: sanity checks
 
     std::vector<const char*> active_instance_extensions(build_info.required_instance_extensions);
     std::vector<VkExtensionProperties> instance_extensions = Get_Instance_Extensions();
@@ -90,8 +90,8 @@ Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
     instance_info.ppEnabledLayerNames = requested_validation_layers.data();
 
 
+    VkDebugReportCallbackCreateInfoEXT debug_report_create_info = { VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT };
     if (build_info.Enable_Validation_Layers) {
-        VkDebugReportCallbackCreateInfoEXT debug_report_create_info = { VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT };
         debug_report_create_info.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
         debug_report_create_info.pfnCallback = debug_callback;
 
