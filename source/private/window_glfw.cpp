@@ -294,7 +294,7 @@ Window_GLFW_p::~Window_GLFW_p()
 
 VkSurfaceKHR Window_GLFW_p::create_surface(Instance_p* instance)
 {
-	LOGI("Creating render surface 1.");
+	//LOGI("Creating render surface 1.");
 	return VK_NULL_HANDLE;// create_surface(instance->get_handle(), VK_NULL_HANDLE);
 }
 

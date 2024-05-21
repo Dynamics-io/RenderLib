@@ -11,6 +11,7 @@ namespace render_vk {
 
 	public:
 
+		Instance_p(VkInstance handle);
 		~Instance_p();
 
 		static Instance_p* Create_Instance(InstanceBuildInfo build_info);
@@ -25,8 +26,6 @@ namespace render_vk {
 
 	private:
 		VkInstance m_handle{ VK_NULL_HANDLE };
-
-		Instance_p(VkInstance handle);
 
 	};
 

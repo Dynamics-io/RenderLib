@@ -27,9 +27,8 @@ bool Renderer_p::init(RendererBuildInfo info)
 
 		LOGI("init 1");
 		m_Window = static_cast<Window_base_p*>(new Window_GLFW_p(window_properties));
-		m_Window->get_dpi_factor();
 		LOGI("init 2: {}", std::to_string(m_Window->get_dpi_factor()));
-		m_Surface = m_Window->create_surface(m_Instance);
+		/*m_Surface = */ m_Window->create_surface(m_Instance);
 		LOGI("init 3");
 
 		m_Window->get_extent();
