@@ -5,7 +5,7 @@
 
 #include "input_events.h"
 
-#include "Instance.h"
+//#include "Instance.h"
 
 class GLFWwindow;
 
@@ -26,46 +26,54 @@ namespace render_vk {
 		void SetOnError(OnWindowErrorActionPtr cb, void* p) {
 			OnError_delegate.action = cb;
 			OnError_delegate.pointer = p;
+			OnError_delegate.set = true;
 		}
 
 		void SetOnResize(OnResizeActionPtr cb, void* p) {
 			OnResize_delegate.action = cb;
 			OnResize_delegate.pointer = p;
+			OnResize_delegate.set = true;
 		}
 
 		void SetOnFocus(OnFocusActionPtr cb, void* p) {
 			OnFocus_delegate.action = cb;
 			OnFocus_delegate.pointer = p;
+			OnFocus_delegate.set = true;
 		}
 
 		void SetOnKeyInput(OnKeyInputActionPtr cb, void* p) {
 			OnKeyInput_delegate.action = cb;
 			OnKeyInput_delegate.pointer = p;
+			OnKeyInput_delegate.set = true;
 		}
 
 		void SetOnMouseMoveInput(OnMouseButtonInputActionPtr cb, void* p) {
 			OnMouseMoveInput_delegate.action = cb;
 			OnMouseMoveInput_delegate.pointer = p;
+			OnMouseMoveInput_delegate.set = true;
 		}
 
 		void SetOnMouseButtonPressInput(OnMouseButtonInputActionPtr cb, void* p) {
 			OnMouseButtonInput_delegate.action = cb;
 			OnMouseButtonInput_delegate.pointer = p;
+			OnMouseButtonInput_delegate.set = true;
 		}
 
-		VkSurfaceKHR create_surface(Instance_p* instance);
+		VkSurfaceKHR create_surface(Instance_p* instance) override;
 
-		VkSurfaceKHR create_surface(VkInstance instance, VkPhysicalDevice physical_device);
+		VkSurfaceKHR create_surface(VkInstance instance, VkPhysicalDevice physical_device) override;
 
-		float get_dpi_factor() const { return 5; }
+		float get_dpi_factor() const override { return 5; }
 
-		float get_content_scale_factor() const { return 0; }
+		float get_content_scale_factor() const override { return 0; }
 
-		std::vector<const char*> get_required_surface_extensions() const { return std::vector<const char*>(); }
+		std::vector<const char*> get_required_surface_extensions() const override { return std::vector<const char*>(); }
 
-		void process_events();
+		void process_events() override;
 
-		void close();
+		void close() override;
+
+		bool should_close() override;
 
 		void error_callback(int error, const char* description);
 

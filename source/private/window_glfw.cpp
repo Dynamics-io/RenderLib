@@ -10,7 +10,7 @@
 
 #include "input_events.h"
 #include "vk_logging.h"
-
+#include "Instance.h"
 
 using namespace render_vk;
 using namespace render_vk::input;
@@ -294,8 +294,8 @@ Window_GLFW_p::~Window_GLFW_p()
 
 VkSurfaceKHR Window_GLFW_p::create_surface(Instance_p* instance)
 {
-	//LOGI("Creating render surface 1.");
-	return VK_NULL_HANDLE;// create_surface(instance->get_handle(), VK_NULL_HANDLE);
+	LOGI("Creating render surface 1.");
+	return create_surface(instance->get_handle(), VK_NULL_HANDLE);
 }
 
 VkSurfaceKHR Window_GLFW_p::create_surface(VkInstance instance, VkPhysicalDevice physical_device)
@@ -313,7 +313,7 @@ VkSurfaceKHR Window_GLFW_p::create_surface(VkInstance instance, VkPhysicalDevice
 	VkResult errCode = glfwCreateWindowSurface(instance, handle, NULL, &surface);
 
 	if (errCode != VK_SUCCESS) {
-		LOGE("Failed to create GLFW window: {}", std::to_string(errCode));
+		LOGE("Failed to create GLFW window: {}", render_vk::to_string(errCode));
 		return nullptr;
 	}
 
@@ -324,12 +324,18 @@ VkSurfaceKHR Window_GLFW_p::create_surface(VkInstance instance, VkPhysicalDevice
 
 void Window_GLFW_p::process_events()
 {
+	//LOGI("Process window events.");
 	glfwPollEvents();
 }
 
 void Window_GLFW_p::close()
 {
 	glfwSetWindowShouldClose(handle, GLFW_TRUE);
+}
+
+bool render_vk::Window_GLFW_p::should_close()
+{
+	return glfwWindowShouldClose(handle);
 }
 
 void Window_GLFW_p::error_callback(int error, const char* description)

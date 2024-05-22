@@ -7,10 +7,10 @@
 #include <stdexcept>
 #include <type_traits>
 #include <assert.h>
+#include "window_glfw.h"
 
 namespace render_vk {
 
-	class Window_base_p;
 	class Instance_p;
 	class VK_Device_P;
 
@@ -60,56 +60,69 @@ namespace render_vk {
 		bool Update(double dt);
 
 		VK_Device_P* Get_Device() {
-			if (m_Parent != nullptr) {
+			if (!Is_Root()) {
 				return m_Parent->Get_Device();
 			}
 			return m_Device;
 		}
 
 		Window_base_p* Get_Window() {
-			if (m_Parent != nullptr) {
+			if (!Is_Root()) {
 				return m_Parent->Get_Window();
 			}
 			return m_Window;
 		}
 
+		bool Has_Window() {
+			if (!Is_Root()) {
+				return m_Parent->Has_Window();
+			}
+			return m_BuildInfo.Window_Enabled && m_Window != nullptr;
+		}
+
 		Instance_p* Get_Instance() {
-			if (m_Parent != nullptr) {
+			if (!Is_Root()) {
 				return m_Parent->Get_Instance();
 			}
 			return m_Instance;
 		}
 
 		VkSurfaceKHR Get_VkSurface() {
-			if (m_Parent != nullptr) {
+			if (!Is_Root()) {
 				return m_Parent->Get_VkSurface();
 			}
 			return m_Surface;
 		}
 
 		RendererBuildInfo Get_BuildInfo() {
-			if (m_Parent != nullptr) {
+			if (!Is_Root()) {
 				return m_Parent->Get_BuildInfo();
 			}
 			return m_BuildInfo;
 		}
 
 		int32_t Get_Graphics_Queue_Index() {
-			if (m_Parent != nullptr) {
+			if (!Is_Root()) {
 				return m_Parent->Get_Graphics_Queue_Index();
 			}
 			return m_graphics_queue_index;
 		}
 
 		bool Is_Headless() {
-			if (m_Parent != nullptr) {
+			if (!Is_Root()) {
 				return m_Parent->Is_Headless();
 			}
 			return m_Surface == nullptr;
 		}
 
+		bool Finalize();
+
 		Renderer_p* Get_Parent() {
 			return m_Parent;
+		}
+
+		bool Is_Root() {
+			return m_Parent == nullptr;
 		}
 
 		std::vector<Renderer_p*> Get_Children() {

@@ -42,40 +42,33 @@ Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
 {
     LOGI("Creating Vulkan instance.");
 
+    //return nullptr;
+
     VK_CHECK_THROW(volkInitialize()); // TODO: sanity checks
 
     std::vector<const char*> active_instance_extensions(build_info.required_instance_extensions);
-    std::vector<VkExtensionProperties> instance_extensions = Get_Instance_Extensions();
+    std::vector<VkExtensionProperties> supported_instance_extensions = Get_Instance_Extensions();
+
+    if (build_info.Enable_Validation_Layers) {
+        active_instance_extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+    }
 
 
+    LOGI("Supported instance extensions:");
+    for (const auto& ext : supported_instance_extensions) {
+        LOGI("	\t{}", ext.extensionName);
+    }
 
-    // TODO: Add extra instance extensions
+    LOGI("Required instance extensions:");
+    for (const auto& ext : active_instance_extensions) {
+        LOGI("	\t{}", ext);
+    }
 
-
-    if (!validate_extensions(active_instance_extensions, instance_extensions))
+    if (!validate_extensions(active_instance_extensions, supported_instance_extensions))
     {
         throw std::runtime_error("Required instance extensions are missing.");
     }
-
-
-    std::vector<const char*> requested_validation_layers(build_info.required_validation_layers);
-    std::vector<VkLayerProperties> supported_validation_layers = Get_Supported_Validation_Layers();
-
-
-    // TODO: Add extra validation layers
-
-
-
-    if (validate_layers(requested_validation_layers, supported_validation_layers)) {
-        LOGI("Enabled Validation Layers:");
-        for (const auto& layer : requested_validation_layers)
-        {
-            LOGI("	\t{}", layer);
-        }
-    }
-    else {
-        throw std::runtime_error("Required validation layers are missing.");
-    }
+    
 
     VkApplicationInfo app{ VK_STRUCTURE_TYPE_APPLICATION_INFO };
     app.pApplicationName = "RenderLibrary";
@@ -84,18 +77,48 @@ Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
 
     VkInstanceCreateInfo instance_info{ VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO };
     instance_info.pApplicationInfo = &app;
-    instance_info.enabledExtensionCount = active_instance_extensions.size();
+
+    instance_info.enabledExtensionCount = render_vk::to_u32(active_instance_extensions.size());
     instance_info.ppEnabledExtensionNames = active_instance_extensions.data();
-    instance_info.enabledLayerCount = requested_validation_layers.size();
-    instance_info.ppEnabledLayerNames = requested_validation_layers.data();
 
-
+    // Handle validation layers
     VkDebugReportCallbackCreateInfoEXT debug_report_create_info = { VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT };
+    std::vector<const char*> requested_validation_layers(build_info.required_validation_layers);
+    std::vector<VkLayerProperties> supported_validation_layers = Get_Supported_Validation_Layers();
     if (build_info.Enable_Validation_Layers) {
+
+
+        if (build_info.Enable_Validation_Layers) {
+            // Determine the optimal validation layers to enable that are necessary for useful debugging
+            std::vector<const char*> optimal_validation_layers = render_vk::get_optimal_validation_layers(supported_validation_layers);
+            requested_validation_layers.insert(requested_validation_layers.end(), optimal_validation_layers.begin(), optimal_validation_layers.end());
+        }
+
+        LOGI("Supported Validation Layers:");
+        for (const auto& layer : supported_validation_layers) {
+            LOGI("	\t{}", layer.layerName);
+        }
+
+        if (validate_layers(requested_validation_layers, supported_validation_layers)) {
+            LOGI("Enabled Validation Layers:");
+            for (const auto& layer : requested_validation_layers)
+            {
+                LOGI("	\t{}", layer);
+            }
+        }
+        else {
+            throw std::runtime_error("Required validation layers are missing.");
+        }
+
+        instance_info.enabledLayerCount = render_vk::to_u32(requested_validation_layers.size());
+        instance_info.ppEnabledLayerNames = requested_validation_layers.data();
+
         debug_report_create_info.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
         debug_report_create_info.pfnCallback = debug_callback;
 
         instance_info.pNext = &debug_report_create_info;
+
+        LOGI("Validation layers enabled.");
     }
 
     // instance_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
@@ -108,6 +131,8 @@ Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
     // VK_CHECK(vkCreateDebugReportCallbackEXT(context.instance, &debug_report_create_info, nullptr, &context.debug_callback));
 
     Instance_p* instance = new Instance_p(vk_inst);
+
+    LOGI("Vulkan instance created.");
 
     return instance;
 }

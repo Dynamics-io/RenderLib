@@ -19,6 +19,10 @@ public:
 	void Log_Error(std::string msg);
 	void Log_Debug(std::string msg);
 
+	Generic_Logger* Get_Generic_Logger() {
+		return m_glogger;
+	}
+
 private:
 
 	static void Log_Info_s(void* ptr, std::string msg) {

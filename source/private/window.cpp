@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include "vk_logging.h"
+
 using namespace render_vk;
 
 Window_base_p::Window_base_p(const Window_Properties& properties) :

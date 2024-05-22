@@ -77,10 +77,12 @@ namespace render_vk {
 	};
 }
 
-#define LOGI(...) Logger_base_p::Instance()->Log_Info(FORMAT(__VA_ARGS__))
-#define LOGW(...) Logger_base_p::Instance()->Log_Warning(FORMAT(__VA_ARGS__))
-#define LOGE(...) Logger_base_p::Instance()->Log_Error(FORMAT(__VA_ARGS__))
-#define LOGD(...) Logger_base_p::Instance()->Log_Debug(FORMAT(__VA_ARGS__))
+#define NULL_LOG Logger_base_p::Instance() == nullptr
+
+#define LOGI(...) if (!(NULL_LOG)) Logger_base_p::Instance()->Log_Info(FORMAT(__VA_ARGS__))
+#define LOGW(...) if (!(NULL_LOG)) Logger_base_p::Instance()->Log_Warning(FORMAT(__VA_ARGS__))
+#define LOGE(...) if (!(NULL_LOG)) Logger_base_p::Instance()->Log_Error(FORMAT(__VA_ARGS__))
+#define LOGD(...) if (!(NULL_LOG)) Logger_base_p::Instance()->Log_Debug(FORMAT(__VA_ARGS__))
 
 #define VK_CHECK_RET(x, ret)												\
 	do																		\

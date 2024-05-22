@@ -16,6 +16,10 @@ add_executable(${PROJECT_NAME} WIN32 ${${PROJECT_NAME}_headers} ${${PROJECT_NAME
 
 target_link_libraries(${PROJECT_NAME} PRIVATE RenderLib RenderLib_private)
 
+#MY_COMPIL_FLAGS  already contains some options
+#set(MY_COMPIL_FLAGS ${MY_COMPIL_FLAGS} /fsanitize=address)
+#set(CMAKE_EXE_LINKER_FLAGS "/fsanitize=address")
+#target_compile_options(${PROJECT_NAME} PRIVATE ${MY_COMPIL_FLAGS})
 
 if(MSVC)
 	#Set the working directory to the source of the project so developer dont have to

@@ -5,9 +5,11 @@
 #include "window_properties.h"
 #include "vk_common.h"
 
-class Instance_p;
+
 
 namespace render_vk {
+
+	class Instance_p;
 
 	class Window_base_p
 	{
@@ -28,6 +30,8 @@ namespace render_vk {
 		virtual void process_events();
 
 		virtual void close() = 0;
+
+		virtual bool should_close() = 0;
 
 		Window_Extent resize(const Window_Extent& extent);
 

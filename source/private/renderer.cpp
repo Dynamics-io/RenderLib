@@ -12,6 +12,15 @@ bool Renderer_p::init(RendererBuildInfo info)
 {
 	m_Is_Initialized = false;
 
+	if (info.Window_Enabled) {
+		info.Instance_Info.required_instance_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+		info.Instance_Info.required_instance_extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+#endif
+
+	}
+
 	m_BuildInfo = info;
 	m_Instance = Instance_p::Create_Instance(info.Instance_Info);
 
@@ -25,18 +34,21 @@ bool Renderer_p::init(RendererBuildInfo info)
 		window_properties.vsync = Vsync::Default;
 		window_properties.title = info.Window_Title;
 
-		LOGI("init 1");
-		m_Window = static_cast<Window_base_p*>(new Window_GLFW_p(window_properties));
-		LOGI("init 2: {}", std::to_string(m_Window->get_dpi_factor()));
+		//LOGI("init 1");
+		m_Window = static_cast<Window_base_p*> (new Window_GLFW_p(window_properties));
+		//LOGI("init 2: {}", std::to_string(m_Window->get_dpi_factor()));
 		m_Surface = m_Window->create_surface(m_Instance);
-		LOGI("init 3");
+		//LOGI("init 3");
+
+		
 
 		m_Window->get_extent();
 		//LOGI("init 4");
 
 		if (!m_Surface)
 		{
-			throw std::runtime_error("Failed to create window surface.");
+			//throw std::runtime_error("Failed to create window surface.");
+			LOGE("Failed to create window surface.");
 		}
 	}
 	else {
@@ -44,6 +56,7 @@ bool Renderer_p::init(RendererBuildInfo info)
 	}
 
 	bool set_device = set_default_device();
+	LOGI("Default GPU set.");
 
 	if (!set_device) {
 		LOGE("Failed to load physical device!");
@@ -51,6 +64,7 @@ bool Renderer_p::init(RendererBuildInfo info)
 	}
 
 	Load_Device();
+	LOGI("Vulkan device loaded.");
 
 	if (!m_Device) {
 		LOGE("Failed to load logical device!");
@@ -58,6 +72,8 @@ bool Renderer_p::init(RendererBuildInfo info)
 	}
 
 	m_Is_Initialized = true;
+	LOGI("Renderer '{}' Initialized.", Get_Name());
+
 	
 	return true;
 }
@@ -195,6 +211,17 @@ bool Renderer_p::Rebuild()
 	return status;*/
 }
 
+bool Renderer_p::Finalize()
+{
+	if (!Is_Root()) {
+		return m_Parent->Finalize();
+	}
+
+
+
+	return true;
+}
+
 bool Renderer_p::Dispose()
 {
 	bool status = true;
@@ -245,6 +272,20 @@ bool Renderer_p::Update(double dt)
 
 	status &= Step(dt);
 
+	if (Is_Root()) {
+
+
+		if (!Is_Headless()) {
+			m_Window->process_events();
+
+			if (m_Window->should_close()) {
+
+			}
+		}
+
+
+	}
+
 	if (!status) {
 		LOGE("Renderer step failed for renderer \"{}\".", Get_Name());
 	}
@@ -269,9 +310,8 @@ bool Renderer_p::set_default_device()
 		std::vector<VkQueueFamilyProperties> queue_family_properties = device.Get_Queue_Family_Properties();
 
 		for (uint32_t i = 0; i < queue_family_properties.size(); i++) {
-
-			VkBool32 supports_present = Is_Headless() ? 0 : device.Get_Physical_Device_Surface_Support(m_Surface, i);
-
+			VkBool32 supports_present = Is_Headless() ? VK_FALSE : device.Get_Physical_Device_Surface_Support(m_Surface, i);
+			
 			// Find a queue family which supports graphics and presentation.
 			if ((queue_family_properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && (supports_present || Is_Headless()))
 			{
@@ -279,6 +319,7 @@ bool Renderer_p::set_default_device()
 				break;
 			}
 		}
+		
 	}
 
 	if (m_graphics_queue_index < 0)

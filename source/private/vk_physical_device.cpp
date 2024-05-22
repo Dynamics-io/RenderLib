@@ -28,7 +28,7 @@ std::vector<VkQueueFamilyProperties> VK_Physical_Device_p::Get_Queue_Family_Prop
 VkBool32 VK_Physical_Device_p::Get_Physical_Device_Surface_Support(VkSurfaceKHR surface, uint32_t queue_family_index)
 {
 	VkBool32 supports_present;
-	vkGetPhysicalDeviceSurfaceSupportKHR(m_device, queue_family_index, surface, &supports_present);
+	VK_CHECK_RET(vkGetPhysicalDeviceSurfaceSupportKHR(m_device, queue_family_index, surface, &supports_present), VK_FALSE);
 	return supports_present;
 }
 
@@ -49,7 +49,12 @@ VK_Device_P* VK_Physical_Device_p::Create_Device(
 	uint32_t queue_family, uint32_t num_queues, 
 	std::vector<const char*> required_extensions)
 {
-	return Create_Device({ queue_family }, { num_queues }, required_extensions);
+	std::vector<uint32_t> queue_families;
+	queue_families.push_back(queue_family);
+
+	std::vector<uint32_t> num_queues_arr;
+	num_queues_arr.push_back(num_queues);
+	return Create_Device(queue_families, num_queues_arr, required_extensions);
 }
 
 VK_Device_P* VK_Physical_Device_p::Create_Device(

@@ -29,4 +29,7 @@ namespace render_vk {
 	bool validate_layers(
 		const std::vector<const char*>& required,
 		const std::vector<VkLayerProperties>& available);
+
+
+	std::vector<const char*> get_optimal_validation_layers(const std::vector<VkLayerProperties>& supported_instance_layers);
 }
