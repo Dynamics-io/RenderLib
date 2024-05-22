@@ -65,6 +65,10 @@ void Tester::main_loop()
 
 		m_traingle_renderer->Update(1/60.0);
 
+		if (m_traingle_renderer->Is_Finalized()) {
+			m_run = false;
+			break;
+		}
 	}
 }
 

@@ -21,6 +21,8 @@ bool Renderer_p::init(RendererBuildInfo info)
 
 	}
 
+	info.Device_Required_Extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
 	m_BuildInfo = info;
 	m_Instance = Instance_p::Create_Instance(info.Instance_Info);
 
@@ -217,7 +219,14 @@ bool Renderer_p::Finalize()
 		return m_Parent->Finalize();
 	}
 
+	Dispose();
 
+	if (!Is_Headless()) {
+		m_Window->Dispose();
+	}
+
+	m_Is_Initialized = false;
+	m_Is_Finalized = true; // TODO: probably should do a proper state machine.
 
 	return true;
 }
@@ -279,7 +288,7 @@ bool Renderer_p::Update(double dt)
 			m_Window->process_events();
 
 			if (m_Window->should_close()) {
-
+				return Finalize();
 			}
 		}
 
@@ -339,38 +348,14 @@ bool Renderer_p::set_default_device()
 	return true;
 }
 
-VK_Device_P* Renderer_p::Load_Device()
+VK_Device_p* Renderer_p::Load_Device()
 {
 	m_Device = m_PhysicalDevice.Create_Device(m_graphics_queue_index, 1, m_BuildInfo.Device_Required_Extensions);
+
+
 
 	return m_Device;
 }
 
-/*template <typename T>
-Renderer_p* Renderer_p::Create(RendererBuildInfo info)
-{
-	assert(std::is_base_of<Renderer_p, T>::value, "Renderer must derive from Renderer_p");
 
-	Renderer_p* renderer = static_cast<Renderer_p*>(new T());
-	bool render_inited = renderer->init(info);
-
-	if (!render_inited) {
-		throw std::runtime_error("Failed to create root renderer.");
-	}
-
-	return renderer;
-}*/
-
-/*template <typename T>
-Renderer_p* Renderer_p::CreateChildRenderer(ChildRendererBuildInfo info)
-{
-	assert(std::is_base_of<Renderer_p, T>::value, "Renderer must derive from Renderer_p");
-
-	Renderer_p* renderer = static_cast<Renderer_p*>(new T());
-
-	renderer->init(this, info);
-	m_child_renderers.push_back(renderer);
-
-	return renderer;
-}*/
 

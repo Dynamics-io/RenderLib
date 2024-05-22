@@ -75,6 +75,8 @@ namespace render_vk {
 
 		bool should_close() override;
 
+		void Dispose() override;
+
 		void error_callback(int error, const char* description);
 
 		void window_close_callback(GLFWwindow* window);

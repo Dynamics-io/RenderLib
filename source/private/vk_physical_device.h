@@ -6,7 +6,7 @@
 namespace render_vk {
 
 	class Instance_p;
-	class VK_Device_P;
+	class VK_Device_p;
 
 	class VK_Physical_Device_p {
 	public:
@@ -21,10 +21,20 @@ namespace render_vk {
 
 		std::vector<VkExtensionProperties> Get_Device_Extension_Properties();
 
-		VK_Device_P* Create_Device(uint32_t queue_family, uint32_t num_queues,
+		VkSurfaceCapabilitiesKHR Get_Surface_Capabilities(VkSurfaceKHR surface);
+
+		std::vector<VkSurfaceFormatKHR> Get_Surface_Formats(VkSurfaceKHR surface);
+
+		VkSurfaceFormatKHR Select_Surface_Format(
+			VkSurfaceKHR surface, 
+			std::vector<VkFormat> const& preferred_formats = {
+				VK_FORMAT_R8G8B8A8_SRGB, VK_FORMAT_B8G8R8A8_SRGB, VK_FORMAT_A8B8G8R8_SRGB_PACK32 }
+		);
+
+		VK_Device_p* Create_Device(uint32_t queue_family, uint32_t num_queues,
 			std::vector<const char*> required_extensions);
 
-		VK_Device_P* Create_Device(std::vector<uint32_t> queue_families, std::vector<uint32_t> num_queues,
+		VK_Device_p* Create_Device(std::vector<uint32_t> queue_families, std::vector<uint32_t> num_queues,
 			std::vector<const char*> required_extensions);
 
 	private:

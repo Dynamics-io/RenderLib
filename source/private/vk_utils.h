@@ -32,4 +32,6 @@ namespace render_vk {
 
 
 	std::vector<const char*> get_optimal_validation_layers(const std::vector<VkLayerProperties>& supported_instance_layers);
+
+	
 }

@@ -4,6 +4,9 @@
 #include "vk_logging.h"
 #include "vk_utils.h"
 
+#include <algorithm>
+#include <vector>
+
 using namespace render_vk;
 
 VK_Physical_Device_p::VK_Physical_Device_p(Instance_p* instance, VkPhysicalDevice device) :
@@ -45,7 +48,44 @@ std::vector<VkExtensionProperties> VK_Physical_Device_p::Get_Device_Extension_Pr
 	return device_extensions;
 }
 
-VK_Device_P* VK_Physical_Device_p::Create_Device(
+VkSurfaceCapabilitiesKHR VK_Physical_Device_p::Get_Surface_Capabilities(VkSurfaceKHR surface)
+{
+	VkSurfaceCapabilitiesKHR surface_properties{};
+	VK_CHECK_RET(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_device, surface, &surface_properties), surface_properties);
+	return surface_properties;
+}
+
+std::vector<VkSurfaceFormatKHR> VK_Physical_Device_p::Get_Surface_Formats(VkSurfaceKHR surface)
+{
+	std::vector<VkSurfaceFormatKHR> supported_surface_formats;
+
+	uint32_t surface_format_count;
+	VK_CHECK_RET(vkGetPhysicalDeviceSurfaceFormatsKHR(m_device, surface, &surface_format_count, nullptr), supported_surface_formats);
+
+	supported_surface_formats = std::vector<VkSurfaceFormatKHR>(surface_format_count);
+	VK_CHECK_RET(vkGetPhysicalDeviceSurfaceFormatsKHR(m_device, surface, &surface_format_count, supported_surface_formats.data()), supported_surface_formats);
+
+	return supported_surface_formats;
+}
+
+VkSurfaceFormatKHR VK_Physical_Device_p::Select_Surface_Format(VkSurfaceKHR surface, std::vector<VkFormat> const& preferred_formats)
+{
+	std::vector<VkSurfaceFormatKHR> supported_surface_formats = Get_Surface_Formats(surface);
+
+	auto it = std::find_if(
+		supported_surface_formats.begin(),
+		supported_surface_formats.end(),
+		[&preferred_formats](VkSurfaceFormatKHR surface_format) {
+			return std::any_of(preferred_formats.begin(),
+			preferred_formats.end(),
+			[&surface_format](VkFormat format) { return format == surface_format.format; });
+		});
+
+	// We use the first supported format as a fallback in case none of the preferred formats is available
+	return it != supported_surface_formats.end() ? *it : supported_surface_formats[0];
+}
+
+VK_Device_p* VK_Physical_Device_p::Create_Device(
 	uint32_t queue_family, uint32_t num_queues, 
 	std::vector<const char*> required_extensions)
 {
@@ -57,7 +97,7 @@ VK_Device_P* VK_Physical_Device_p::Create_Device(
 	return Create_Device(queue_families, num_queues_arr, required_extensions);
 }
 
-VK_Device_P* VK_Physical_Device_p::Create_Device(
+VK_Device_p* VK_Physical_Device_p::Create_Device(
 	std::vector<uint32_t> queue_families, std::vector<uint32_t> num_queues,
 	std::vector<const char*> required_extensions)
 {
@@ -84,7 +124,13 @@ VK_Device_P* VK_Physical_Device_p::Create_Device(
 	VK_CHECK_RET(vkCreateDevice(m_device, &device_info, nullptr, &l_device), nullptr);
 	volkLoadDevice(l_device);
 
-	return new VK_Device_P(l_device);
+	VK_Device_p* device_inst = new VK_Device_p(l_device);
+
+	for (int i = 0; i < queue_families.size(); i++) {
+		device_inst->Load_Queues(queue_families[i], num_queues[i]);
+	}
+
+	return new VK_Device_p(l_device);
 }
 
 

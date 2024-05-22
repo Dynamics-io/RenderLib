@@ -33,6 +33,8 @@ namespace render_vk {
 
 		virtual bool should_close() = 0;
 
+		virtual void Dispose() = 0;
+
 		Window_Extent resize(const Window_Extent& extent);
 
 		virtual std::vector<const char*> get_required_surface_extensions() const = 0;

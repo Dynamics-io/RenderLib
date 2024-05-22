@@ -59,7 +59,14 @@ namespace render_vk {
 
 		bool Update(double dt);
 
-		VK_Device_P* Get_Device() {
+		VK_Physical_Device_p* Get_GPU() {
+			if (!Is_Root()) {
+				return m_Parent->Get_GPU();
+			}
+			return &m_PhysicalDevice;
+		}
+
+		VK_Device_p* Get_Device() {
 			if (!Is_Root()) {
 				return m_Parent->Get_Device();
 			}
@@ -117,6 +124,13 @@ namespace render_vk {
 
 		bool Finalize();
 
+		bool Is_Finalized() {
+			if (!Is_Root()) {
+				return m_Parent->Is_Finalized();
+			}
+			return m_Is_Finalized;
+		}
+
 		Renderer_p* Get_Parent() {
 			return m_Parent;
 		}
@@ -144,7 +158,7 @@ namespace render_vk {
 		
 
 	protected:
-		VK_Device_P* Load_Device();
+		VK_Device_p* Load_Device();
 
 		void Set_Name(std::string name) {
 			m_Name = name;
@@ -165,12 +179,14 @@ namespace render_vk {
 		RendererBuildInfo m_BuildInfo;
 		VK_Physical_Device_p m_PhysicalDevice;
 		int32_t m_graphics_queue_index{ -1 };
-		VK_Device_P* m_Device{ nullptr };
+		VK_Device_p* m_Device{ nullptr };
+		bool m_Is_Finalized{ false };
 		// End Root-only fields.
 
 		std::string m_Name;
 		bool m_Is_Setup{ false };
 		bool m_Is_Initialized{ false };
+		
 
 		Renderer_p* m_Parent { nullptr };
 		std::vector<Renderer_p*> m_child_renderers;

@@ -7,6 +7,8 @@ set(${PROJECT_NAME}_headers
 	vk_utils.h
 	vk_physical_device.h
 	vk_device.h
+	vk_queue.h
+	vk_swapchain.h
 	instance.h
 	window.h
 	window_glfw.h
@@ -24,6 +26,8 @@ set(${PROJECT_NAME}_sources
 	vk_device.cpp
 	vk_utils.cpp
 	vk_logging.cpp
+	vk_queue.cpp
+	vk_swapchain.cpp
 	window_glfw.cpp
 	renderer.cpp
 	

@@ -338,6 +338,11 @@ bool render_vk::Window_GLFW_p::should_close()
 	return glfwWindowShouldClose(handle);
 }
 
+void render_vk::Window_GLFW_p::Dispose()
+{
+	glfwTerminate();
+}
+
 void Window_GLFW_p::error_callback(int error, const char* description)
 {
 	std::string msg = FORMAT("GLFW Error (code {}): {}", error, description);

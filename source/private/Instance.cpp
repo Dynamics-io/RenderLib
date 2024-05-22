@@ -28,14 +28,23 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugReportFlagsEXT flags
     return VK_FALSE;
 }
 
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+        func(instance, debugMessenger, pAllocator);
+    }
+}
 
-Instance_p::Instance_p(VkInstance handle) :
-    m_handle{ handle }
+
+Instance_p::Instance_p(InstanceBuildInfo build_info, VkInstance handle) :
+    m_handle{ handle },
+    m_Build_Info { build_info }
 {
 }
 
 Instance_p::~Instance_p()
 {
+    Dispose();
 }
 
 Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
@@ -121,7 +130,7 @@ Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
         LOGI("Validation layers enabled.");
     }
 
-    // instance_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    instance_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 
 
     VkInstance vk_inst;
@@ -130,7 +139,7 @@ Instance_p* Instance_p::Create_Instance(InstanceBuildInfo build_info)
 
     // VK_CHECK(vkCreateDebugReportCallbackEXT(context.instance, &debug_report_create_info, nullptr, &context.debug_callback));
 
-    Instance_p* instance = new Instance_p(vk_inst);
+    Instance_p* instance = new Instance_p(build_info, vk_inst);
 
     LOGI("Vulkan instance created.");
 
@@ -150,7 +159,7 @@ std::vector<VkExtensionProperties> Instance_p::Get_Instance_Extensions()
     return instance_extensions;
 }
 
-std::vector<VkLayerProperties> render_vk::Instance_p::Get_Supported_Validation_Layers()
+std::vector<VkLayerProperties> Instance_p::Get_Supported_Validation_Layers()
 {
     std::vector<VkLayerProperties> supported_validation_layers;
 
@@ -175,4 +184,13 @@ std::vector<VkPhysicalDevice> Instance_p::Get_Physical_Devices()
     VK_CHECK_RET(vkEnumeratePhysicalDevices(m_handle, &gpu_count, gpus.data()), gpus);
 
     return gpus;
+}
+
+void Instance_p::Dispose()
+{
+    if (m_Build_Info.Enable_Validation_Layers) {
+        //vkDestroyDebugUtilsMessengerEXT(m_handle, debug_callback, nullptr);
+    }
+
+    vkDestroyInstance(m_handle, nullptr);
 }
