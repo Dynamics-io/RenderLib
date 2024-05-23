@@ -13,6 +13,7 @@ namespace render_vk {
 
 	class Instance_p;
 	class VK_Device_P;
+	class VK_Swapchain_p;
 
 	class Renderer_p {
 	public:
@@ -180,6 +181,7 @@ namespace render_vk {
 		VK_Physical_Device_p m_PhysicalDevice;
 		int32_t m_graphics_queue_index{ -1 };
 		VK_Device_p* m_Device{ nullptr };
+		VK_Swapchain_p* m_Swapchain{ nullptr };
 		bool m_Is_Finalized{ false };
 		// End Root-only fields.
 

@@ -3,8 +3,10 @@
 #include "window_glfw.h"
 #include "Instance.h"
 #include "vk_physical_device.h"
+#include "vk_device.h"
 #include "vk_utils.h"
 #include "vk_logging.h"
+#include "vk_swapchain.h"
 
 using namespace render_vk;
 
@@ -12,6 +14,8 @@ bool Renderer_p::init(RendererBuildInfo info)
 {
 	m_Is_Initialized = false;
 
+	// ### Instance extensions ###
+	
 	if (info.Window_Enabled) {
 		info.Instance_Info.required_instance_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 
@@ -20,8 +24,18 @@ bool Renderer_p::init(RendererBuildInfo info)
 #endif
 
 	}
+	
+	info.Instance_Info.required_instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+
+	// ############################
+
+
+
+	// ### Device extensions ###
 
 	info.Device_Required_Extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+	// #########################
 
 	m_BuildInfo = info;
 	m_Instance = Instance_p::Create_Instance(info.Instance_Info);
@@ -111,6 +125,8 @@ bool Renderer_p::Build()
 	m_Is_Setup = false;
 
 	bool status = true;
+
+	m_Swapchain = m_Device->Create_Swapchain(m_Surface);
 
 	for (const auto& child : m_child_renderers) {
 		status &= child->Build();

@@ -9,6 +9,10 @@ set(${PROJECT_NAME}_headers
 	vk_device.h
 	vk_queue.h
 	vk_swapchain.h
+	vk_image.h
+	vk_fence.h
+	vk_command_pool.h
+	vk_command_buffer.h
 	instance.h
 	window.h
 	window_glfw.h
@@ -28,6 +32,10 @@ set(${PROJECT_NAME}_sources
 	vk_logging.cpp
 	vk_queue.cpp
 	vk_swapchain.cpp
+	vk_image.cpp
+	vk_fence.cpp
+	vk_command_pool.cpp
+	vk_command_buffer.cpp
 	window_glfw.cpp
 	renderer.cpp
 	

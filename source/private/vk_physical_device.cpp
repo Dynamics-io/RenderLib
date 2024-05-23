@@ -124,13 +124,13 @@ VK_Device_p* VK_Physical_Device_p::Create_Device(
 	VK_CHECK_RET(vkCreateDevice(m_device, &device_info, nullptr, &l_device), nullptr);
 	volkLoadDevice(l_device);
 
-	VK_Device_p* device_inst = new VK_Device_p(l_device);
+	VK_Device_p* device_inst = new VK_Device_p(this, l_device);
 
 	for (int i = 0; i < queue_families.size(); i++) {
 		device_inst->Load_Queues(queue_families[i], num_queues[i]);
 	}
 
-	return new VK_Device_p(l_device);
+	return new VK_Device_p(this, l_device);
 }
 
 

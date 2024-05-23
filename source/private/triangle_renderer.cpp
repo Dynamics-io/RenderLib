@@ -16,7 +16,9 @@ render_vk::Triangle_Renderer_p::Triangle_Renderer_p()
 
 bool Triangle_Renderer_p::Setup()
 {
-
+    m_GPU = Get_GPU();
+    m_Device = Get_Device();
+    m_Queue = m_Device->Get_Queue(Get_Graphics_Queue_Index(), 0);
 
 
     return true;
@@ -38,19 +40,4 @@ bool Triangle_Renderer_p::Cleanup()
     return true;
 }
 
-void render_vk::Triangle_Renderer_p::init_swapchain()
-{
-    m_Surface = Get_VkSurface();
-    m_GPU = Get_GPU();
-    m_Device = Get_Device();
-    m_Queue = m_Device->Get_Queue(Get_Graphics_Queue_Index(), 0);
 
-    VkSurfaceCapabilitiesKHR surface_properties = m_GPU->Get_Surface_Capabilities(m_Surface);
-
-    VkSurfaceFormatKHR format = m_GPU->Select_Surface_Format(m_Surface);
-
-    
-
-
-
-}
