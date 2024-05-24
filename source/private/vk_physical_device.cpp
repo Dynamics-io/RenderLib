@@ -130,7 +130,7 @@ VK_Device_p* VK_Physical_Device_p::Create_Device(
 		device_inst->Load_Queues(queue_families[i], num_queues[i]);
 	}
 
-	return new VK_Device_p(this, l_device);
+	return device_inst;
 }
 
 

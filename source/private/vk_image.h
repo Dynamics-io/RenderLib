@@ -21,6 +21,10 @@ namespace render_vk {
 			return m_image_view;
 		}
 
+		VkImageView* ImageView_Handle_ref() {
+			return &m_image_view;
+		}
+
 		VK_Image_p* Create_New_View(ImageViewBuildInfo info);
 
 		void Dispose();

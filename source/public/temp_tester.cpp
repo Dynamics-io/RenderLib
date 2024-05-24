@@ -40,6 +40,8 @@ void Tester::main_loop()
 {
 	m_run = true;
 
+	std::string shader_folder = "triangle";
+
 	RendererBuildInfo info{};
 	info.Window_Enabled = true;
 	info.Window_Title = "Tester";
@@ -49,7 +51,7 @@ void Tester::main_loop()
 	info.Instance_Info.Enable_Validation_Layers = true;
 	info.Instance_Info.Instance_Type = InstanceType::Create_VK_Instance;
 
-	info.Shader_Directory = std::string(CMAKE_ROOT_DIR) + "\\shaders\\bin";
+	info.Shader_Directory = std::string(CMAKE_ROOT_DIR) + "\\shaders\\" + shader_folder + "\\bin";
 
 	m_traingle_renderer = Renderer_p::Create<Triangle_Renderer_p>(info);
 

@@ -45,8 +45,11 @@ namespace {
 		size_t pos1 = filePath.find_last_of('/');
 		size_t pos2 = filePath.find_last_of('\\');
 
+		pos1 = pos1 == std::string::npos ? 0 : pos1;
+		pos2 = pos2 == std::string::npos ? 0 : pos2;
+
 		// Determine the position of the last separator
-		size_t pos = std::max(pos1, pos2);
+		size_t pos = std::max(pos1, pos2); 
 
 		// Return the substring after the last separator
 		if (pos == std::string::npos) {
@@ -69,6 +72,8 @@ void Shader_Depository_p::LoadAll(const std::string& path)
 
 	std::vector<std::string> files = getAllFiles(m_Path);
 
+	LOGI("Loading {} shader files from '{}'.", render_vk::to_string(files.size()), m_Path);
+
 	for (std::string file : files) {
 		std::string shader_name = getFileName(file);
 
@@ -89,6 +94,9 @@ void Shader_Depository_p::LoadAll(const std::string& path)
 VK_Shader_p* render_vk::Shader_Depository_p::Get_Shader(const std::string& name)
 {
 	// TODO: sanity check
+	if (m_shaders.count(name) <= 0) {
+		throw std::runtime_error("Shader_Depository_p: shader not found");
+	}
 
 	return m_shaders[name];
 

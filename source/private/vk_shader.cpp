@@ -15,6 +15,8 @@ using namespace render_vk;
 
 namespace {
 	std::string getFileExtension(const std::string& filePath) {
+
+		LOGI("getFileExtension: {}", filePath);
 		// Find the last occurrence of '.'
 		size_t dotPos = filePath.find_last_of('.');
 
@@ -75,7 +77,11 @@ void render_vk::VK_Shader_p::Finalize()
 
 VkPipelineShaderStageCreateInfo VK_Shader_p::Get_Create_Info()
 {
+	LOGI("getting info");
+
 	std::string ext = getFileExtension(m_filePath);
+	LOGI("shader Extension: {}", ext);
+
 	m_stage = get_stage(ext);
 
 	VkPipelineShaderStageCreateInfo info{ VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO };

@@ -6,6 +6,11 @@
 #include "vk_device.h"
 #include "vk_queue.h"
 #include "vk_swapchain.h"
+#include "vk_shader.h"
+#include "vk_image.h"
+#include "vk_fence.h"
+#include "vk_command_pool.h"
+#include "vk_command_buffer.h"
 
 #include <array>
 
@@ -23,8 +28,19 @@ bool Triangle_Renderer_p::Setup()
     m_Device = Get_Device();
     m_Queue = m_Device->Get_Queue(Get_Graphics_Queue_Index(), 0);
     m_Swapchain = Get_Swapchain();
+    LOGI("Got root objects");
 
+    init_per_frame(m_Swapchain->Image_Count());
+    LOGI("Inited per frame");
 
+    init_render_pass();
+    LOGI("Inited render pass");
+
+    init_pipeline();
+    LOGI("Inited pipeline");
+
+    Setup_Framebuffers(m_render_pass);
+    LOGI("Inited frame buffers");
 
     return true;
 }
@@ -51,6 +67,34 @@ bool Triangle_Renderer_p::Cleanup()
 }
 
 
+
+void render_vk::Triangle_Renderer_p::init_per_frame(int num)
+{
+
+    m_per_frame.clear();
+    m_per_frame.resize(num);
+
+    for (int i = 0; i < num; i++) {
+
+        m_per_frame[i].Queue_Submit_Fence = m_Device->Create_Fence(true);
+
+        m_per_frame[i].Primary_Command_Pool = m_Device->Create_Command_Pool(Get_Graphics_Queue_Index(), CommandPoolCreateFlagBits::CREATE_TRANSIENT_BIT);
+
+        m_per_frame[i].primary_command_buffer = m_per_frame[i].Primary_Command_Pool->Create_CommandBuffer(false, 1);
+    }
+
+}
+
+void render_vk::Triangle_Renderer_p::destroy_per_frame()
+{
+    for (int i = 0; i < m_per_frame.size(); i++) {
+        m_per_frame[i].Queue_Submit_Fence->Dispose();
+
+        m_per_frame[i].primary_command_buffer->Dispose();
+
+        m_per_frame[i].Primary_Command_Pool->Dispose();
+    }
+}
 
 void Triangle_Renderer_p::init_render_pass()
 {
@@ -165,9 +209,45 @@ void render_vk::Triangle_Renderer_p::init_pipeline()
     dynamic_info.dynamicStateCount = render_vk::to_u32(dynamics.size());
     
 
+    LOGI("Loading shaders");
 
+    m_vert_shader = Get_Shader("triangle.vert");
+    LOGI("get vert shader");
+    
+    m_frag_shader = Get_Shader("triangle.frag");
+    LOGI("get frag shader");
 
+    std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages{};
+    shader_stages[0] = m_vert_shader->Get_Create_Info();
+    LOGI("get vert info");
+    shader_stages[1] = m_frag_shader->Get_Create_Info();
+    LOGI("get frag info");
 
+    LOGI("Finish loading shaders");
+
+    VkGraphicsPipelineCreateInfo pipe_info{ VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
+    pipe_info.stageCount = render_vk::to_u32(shader_stages.size());
+    pipe_info.pStages = shader_stages.data();
+    pipe_info.pVertexInputState = &vertex_input;
+    pipe_info.pInputAssemblyState = &input_assembly;
+    pipe_info.pRasterizationState = &raster;
+    pipe_info.pColorBlendState = &blend;
+    pipe_info.pMultisampleState = &multisample;
+    pipe_info.pViewportState = &viewport;
+    pipe_info.pDepthStencilState = &depth_stencil;
+    pipe_info.pDynamicState = &dynamic_info;
+
+    pipe_info.renderPass = m_render_pass;
+    pipe_info.layout = m_pipeline_layout;
+
+    VK_CHECK_THROW(vkCreateGraphicsPipelines(m_Device->Handle(), VK_NULL_HANDLE, 1, &pipe_info, nullptr, &m_Pipeline));
+
+    m_vert_shader->Finalize();
+    m_frag_shader->Finalize();
 }
+
+
+
+
 
 

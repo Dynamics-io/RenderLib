@@ -3,6 +3,7 @@
 #include "vk_common.h"
 
 #include <vector>
+#include <stdexcept>
 
 namespace render_vk {
 
@@ -32,6 +33,17 @@ namespace render_vk {
 
 		std::vector<VK_Image_p*> Get_Images() {
 			return m_swapChainImages;
+		}
+
+		VK_Image_p* Get_Image(int index) {
+			if (index >= m_swapChainImages.size()) {
+				throw std::runtime_error("index >= m_swapChainImages size");
+			}
+			return m_swapChainImages[index];
+		}
+
+		int Image_Count() {
+			return m_swapChainImages.size();
 		}
 
 	private:

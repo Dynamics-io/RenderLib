@@ -16,6 +16,7 @@ namespace render_vk {
 	class VK_Swapchain_p;
 	class Shader_Depository_p;
 	class VK_Shader_p;
+	class VK_Framebuffer_p;
 
 	class Renderer_p {
 	public:
@@ -141,6 +142,8 @@ namespace render_vk {
 			return m_Swapchain;
 		}
 
+		VK_Framebuffer_p* Create_Swapchain_Framebuffer(VkRenderPass render_pass, int image_index);
+
 		VK_Shader_p* Get_Shader(std::string name);
 
 
@@ -185,6 +188,17 @@ namespace render_vk {
 
 		virtual bool Cleanup() = 0;
 
+		void Setup_Framebuffers(VkRenderPass render_pass);
+
+		void Destroy_Framebuffers();
+
+		VK_Framebuffer_p* Get_Swapchain_Framebuffer(int index) {
+			if (index >= m_swapchain_framebuffers.size()) {
+				std::runtime_error("Get_Swapchain_Framebuffer: index >= swapchain frame buffer size");
+			}
+			return m_swapchain_framebuffers[index];
+		}
+
 	private:
 
 		// Begin Root-only fields.
@@ -207,6 +221,8 @@ namespace render_vk {
 
 		Renderer_p* m_Parent { nullptr };
 		std::vector<Renderer_p*> m_child_renderers;
+
+		std::vector<VK_Framebuffer_p*> m_swapchain_framebuffers;
 
 		bool init(RendererBuildInfo info);
 		bool init(Renderer_p* parent, ChildRendererBuildInfo info);

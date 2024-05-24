@@ -7,6 +7,7 @@
 #include "vk_utils.h"
 #include "vk_logging.h"
 #include "vk_swapchain.h"
+#include "vk_framebuffer.h"
 #include "shader_depository.h"
 
 using namespace render_vk;
@@ -378,12 +379,37 @@ VK_Shader_p* Renderer_p::Get_Shader(std::string name)
 	return m_shader_store->Get_Shader(name);
 }
 
+void Renderer_p::Setup_Framebuffers(VkRenderPass render_pass)
+{
+	m_swapchain_framebuffers.clear();
+
+	// Create framebuffer for each swapchain image view
+	for (int i = 0; i < m_Swapchain->Image_Count(); i++) {
+
+		// Build the framebuffer.
+		m_swapchain_framebuffers.push_back(Create_Swapchain_Framebuffer(render_pass, i++));
+	}
+}
+
+void render_vk::Renderer_p::Destroy_Framebuffers()
+{
+	for (int i = 0; i < m_Swapchain->Image_Count(); i++) {
+		m_swapchain_framebuffers[i]->Dispose();
+		delete m_swapchain_framebuffers[i];
+	}
+	m_swapchain_framebuffers.clear();
+}
+
+VK_Framebuffer_p* Renderer_p::Create_Swapchain_Framebuffer(VkRenderPass render_pass, int image_index) {
+	if (!Is_Root()) {
+		return m_Parent->Create_Swapchain_Framebuffer(render_pass, image_index);
+	}
+	return m_Device->Create_Swapchain_Framebuffer(m_Swapchain, render_pass, image_index);
+}
+
 VK_Device_p* Renderer_p::Load_Device()
 {
 	m_Device = m_PhysicalDevice.Create_Device(m_graphics_queue_index, 1, m_BuildInfo.Device_Required_Extensions);
-
-
-
 	return m_Device;
 }
 
