@@ -14,6 +14,8 @@ namespace render_vk {
 	class Instance_p;
 	class VK_Device_P;
 	class VK_Swapchain_p;
+	class Shader_Depository_p;
+	class VK_Shader_p;
 
 	class Renderer_p {
 	public:
@@ -132,6 +134,16 @@ namespace render_vk {
 			return m_Is_Finalized;
 		}
 
+		VK_Swapchain_p* Get_Swapchain() {
+			if (!Is_Root()) {
+				return m_Parent->Get_Swapchain();
+			}
+			return m_Swapchain;
+		}
+
+		VK_Shader_p* Get_Shader(std::string name);
+
+
 		Renderer_p* Get_Parent() {
 			return m_Parent;
 		}
@@ -167,6 +179,8 @@ namespace render_vk {
 
 		virtual bool Setup() = 0;
 
+		virtual bool Resize() = 0;
+
 		virtual bool Step(double dt) = 0;
 
 		virtual bool Cleanup() = 0;
@@ -182,6 +196,7 @@ namespace render_vk {
 		int32_t m_graphics_queue_index{ -1 };
 		VK_Device_p* m_Device{ nullptr };
 		VK_Swapchain_p* m_Swapchain{ nullptr };
+		Shader_Depository_p* m_shader_store{ nullptr };
 		bool m_Is_Finalized{ false };
 		// End Root-only fields.
 

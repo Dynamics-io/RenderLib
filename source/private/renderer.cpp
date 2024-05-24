@@ -7,6 +7,7 @@
 #include "vk_utils.h"
 #include "vk_logging.h"
 #include "vk_swapchain.h"
+#include "shader_depository.h"
 
 using namespace render_vk;
 
@@ -86,6 +87,10 @@ bool Renderer_p::init(RendererBuildInfo info)
 		LOGE("Failed to load logical device!");
 		return false;
 	}
+
+
+	m_shader_store = new Shader_Depository_p(m_Device);
+	m_shader_store->LoadAll(info.Shader_Directory);
 
 	m_Is_Initialized = true;
 	LOGI("Renderer '{}' Initialized.", Get_Name());
@@ -362,6 +367,15 @@ bool Renderer_p::set_default_device()
 	m_PhysicalDevice = device;
 
 	return true;
+}
+
+VK_Shader_p* Renderer_p::Get_Shader(std::string name)
+{
+	if (!Is_Root()) {
+		return m_Parent->Get_Shader(name);
+	}
+
+	return m_shader_store->Get_Shader(name);
 }
 
 VK_Device_p* Renderer_p::Load_Device()

@@ -4,6 +4,7 @@
 #include "vk_swapchain.h"
 #include "vk_fence.h"
 #include "vk_command_pool.h"
+#include "vk_shader.h"
 
 using namespace render_vk;
 
@@ -45,4 +46,9 @@ VK_Fence_p* render_vk::VK_Device_p::Create_Fence(bool signaled)
 VK_CommandPool_p* render_vk::VK_Device_p::Create_Command_Pool(uint32_t queue_family, CommandPoolCreateFlag flags)
 {
 	return new VK_CommandPool_p(this, queue_family, flags);
+}
+
+VK_Shader_p* render_vk::VK_Device_p::Create_Shader()
+{
+	return new VK_Shader_p(this);
 }

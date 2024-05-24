@@ -1,6 +1,9 @@
 
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}\n")
@@ -45,8 +48,11 @@ endif()
 add_compile_definitions($<$<CONFIG:DEBUG>:VKB_DEBUG>)
 add_compile_definitions(NOMINMAX)
 
+string(REPLACE "/" "\\\\" ESCAPED_CMAKE_CURRENT_LIST_DIR ${CMAKE_CURRENT_LIST_DIR})
+add_definitions( -DCMAKE_ROOT_DIR="${ESCAPED_CMAKE_CURRENT_LIST_DIR}" )
+
 if(WIN32)
-    add_compile_definitions(RenderLib_private PUBLIC VK_USE_PLATFORM_WIN32_KHR PLATFORM__WINDOWS)
+    add_compile_definitions(VK_USE_PLATFORM_WIN32_KHR PLATFORM__WINDOWS)
 endif()
 
 project(RenderLibrary)

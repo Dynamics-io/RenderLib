@@ -14,6 +14,7 @@ namespace render_vk {
 	class VK_Swapchain_p;
 	class VK_Fence_p;
 	class VK_CommandPool_p;
+	class VK_Shader_p;
 
 	class VK_Device_p {
 		friend class VK_Physical_Device_p;
@@ -36,6 +37,8 @@ namespace render_vk {
 		VK_Fence_p* Create_Fence(bool signaled);
 
 		VK_CommandPool_p* Create_Command_Pool(uint32_t queue_family, CommandPoolCreateFlag flags);
+
+		VK_Shader_p* Create_Shader();
 
 	private:
 

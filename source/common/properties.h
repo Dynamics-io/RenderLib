@@ -63,5 +63,5 @@ typedef enum CommandPoolCreateFlagBits {
     CREATE_TRANSIENT_BIT = 0x00000001,
     CREATE_RESET_COMMAND_BUFFER_BIT = 0x00000002,
     CREATE_PROTECTED_BIT = 0x00000004,
-} VkCommandPoolCreateFlagBits;
+} CommandPoolCreateFlagBits;
 typedef uint32_t CommandPoolCreateFlag;

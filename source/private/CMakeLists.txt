@@ -13,6 +13,8 @@ set(${PROJECT_NAME}_headers
 	vk_fence.h
 	vk_command_pool.h
 	vk_command_buffer.h
+	vk_shader.h
+	shader_depository.h
 	instance.h
 	window.h
 	window_glfw.h
@@ -36,6 +38,8 @@ set(${PROJECT_NAME}_sources
 	vk_fence.cpp
 	vk_command_pool.cpp
 	vk_command_buffer.cpp
+	vk_shader.cpp
+	shader_depository.cpp
 	window_glfw.cpp
 	renderer.cpp
 	

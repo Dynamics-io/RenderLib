@@ -49,6 +49,8 @@ void Tester::main_loop()
 	info.Instance_Info.Enable_Validation_Layers = true;
 	info.Instance_Info.Instance_Type = InstanceType::Create_VK_Instance;
 
+	info.Shader_Directory = std::string(CMAKE_ROOT_DIR) + "\\shaders\\bin";
+
 	m_traingle_renderer = Renderer_p::Create<Triangle_Renderer_p>(info);
 
 	if (m_traingle_renderer->Has_Window()) {

@@ -7,6 +7,8 @@
 #include <fmt/format.h>
 #include <type_traits>
 #include <limits>
+#include <fstream>
+#include <vector>
 
 #define FORMAT(...) fmt::format(__VA_ARGS__)
 
@@ -47,6 +49,25 @@ namespace render_vk {
 		}
 
 		return static_cast<uint32_t>(value);
+	}
+
+	template <class T>
+	std::vector<T> readFile(const std::string& filename) {
+		std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+		if (!file.is_open()) {
+			return std::vector<T>();
+		}
+
+		size_t fileSize = (size_t)file.tellg();
+		std::vector<T> buffer(fileSize);
+
+		file.seekg(0);
+		file.read(buffer.data(), fileSize);
+
+		file.close();
+
+		return buffer;
 	}
 
 

@@ -1,5 +1,6 @@
 #include "vk_swapchain.h"
 
+#include "properties.h"
 #include "vk_physical_device.h"
 #include "vk_device.h"
 #include "vk_logging.h"
@@ -129,7 +130,7 @@ void VK_Swapchain_p::create_swapchain()
 
 void VK_Swapchain_p::create_images()
 {
-	m_vk_swapChainImages = Get_Images();
+	m_vk_swapChainImages = get_vk_images();
 
 	for (int i = 0; i < m_vk_swapChainImages.size(); i++) {
 
@@ -138,7 +139,7 @@ void VK_Swapchain_p::create_images()
 		view_info.Format = m_format.format;
 		view_info.ArrayLayerCount = 1;
 		view_info.MipLevelCount = 1;
-		view_info.AspectMask = ImageAspectFlag::ASPECT_COLOR_BIT;
+		view_info.AspectMask = ImageAspectFlagBits::ASPECT_COLOR_BIT;
 		
 		VK_Image_p* image = new VK_Image_p(m_device, m_vk_swapChainImages[i], view_info);
 		m_swapChainImages.push_back(image);
@@ -155,7 +156,7 @@ void VK_Swapchain_p::destroy_images()
 	m_swapChainImages.clear();
 }
 
-std::vector<VkImage> VK_Swapchain_p::Get_Images()
+std::vector<VkImage> VK_Swapchain_p::get_vk_images()
 {
 	std::vector<VkImage> swapChainImages;
 

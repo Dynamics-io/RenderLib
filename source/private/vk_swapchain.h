@@ -26,6 +26,14 @@ namespace render_vk {
 			create_swapchain();
 		}
 
+		VkSurfaceFormatKHR Get_Format() {
+			return m_format;
+		}
+
+		std::vector<VK_Image_p*> Get_Images() {
+			return m_swapChainImages;
+		}
+
 	private:
 		VkSwapchainKHR m_swapchain{ VK_NULL_HANDLE };
 		VkSurfaceKHR m_surface{nullptr};
@@ -48,7 +56,7 @@ namespace render_vk {
 		std::vector<VkImage> m_vk_swapChainImages;
 		std::vector<VK_Image_p*> m_swapChainImages;
 
-		std::vector<VkImage> Get_Images();
+		std::vector<VkImage> get_vk_images();
 
 		VK_Swapchain_p(VK_Device_p* device, VkSurfaceKHR surface);
 
