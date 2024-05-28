@@ -10,6 +10,8 @@ namespace render_vk {
 	class VK_Physical_Device_p;
 	class VK_Device_p;
 	class VK_Image_p;
+	class VK_Semaphore_p;
+	class VK_Fence_p;
 
 	class VK_Swapchain_p {
 		friend class VK_Device_p;
@@ -41,6 +43,8 @@ namespace render_vk {
 			}
 			return m_swapChainImages[index];
 		}
+
+		VkResult Acquire_Next_Image_Index(uint64_t timeout, VK_Semaphore_p* semephore, VK_Fence_p* fence, uint32_t* img_index);
 
 		int Image_Count() {
 			return m_swapChainImages.size();

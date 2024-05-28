@@ -5,6 +5,8 @@
 #include "vk_device.h"
 #include "vk_logging.h"
 #include "vk_image.h"
+#include "vk_fence.h"
+#include "vk_semaphore.h"
 
 using namespace render_vk;
 
@@ -154,6 +156,15 @@ void VK_Swapchain_p::destroy_images()
 		delete image;
 	}
 	m_swapChainImages.clear();
+}
+
+VkResult VK_Swapchain_p::Acquire_Next_Image_Index(uint64_t timeout, VK_Semaphore_p* semephore, VK_Fence_p* fence, uint32_t* img_index)
+{
+	VkSemaphore vk_semaphore = semephore != nullptr ? semephore->Handle() : VK_NULL_HANDLE;
+
+	VkFence vk_fence = fence != nullptr ? fence->Handle() : VK_NULL_HANDLE;
+
+	return vkAcquireNextImageKHR(m_device->Handle(), m_swapchain, timeout, vk_semaphore, vk_fence, img_index);
 }
 
 std::vector<VkImage> VK_Swapchain_p::get_vk_images()

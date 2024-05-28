@@ -19,6 +19,8 @@ namespace render_vk {
 
 		VK_CommandBuffer_p* Create_CommandBuffer(bool is_secondary, uint32_t count);
 
+		VkResult Reset(bool release_resources = false);
+
 		void Dispose();
 
 	private:

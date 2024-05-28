@@ -65,3 +65,19 @@ typedef enum CommandPoolCreateFlagBits {
     CREATE_PROTECTED_BIT = 0x00000004,
 } CommandPoolCreateFlagBits;
 typedef uint32_t CommandPoolCreateFlag;
+
+
+typedef enum CommandBufferUsageFlagBits {
+    ONE_TIME_SUBMIT_BIT = 0x00000001,
+    RENDER_PASS_CONTINUE_BIT = 0x00000002,
+    SIMULTANEOUS_USE_BIT = 0x00000004,
+} CommandBufferUsageFlagBits;
+typedef uint32_t CommandBufferUsageFlags;
+
+typedef enum PipelineBindPoint {
+    BIND_POINT_GRAPHICS = 0,
+    BIND_POINT_COMPUTE = 1,
+    BIND_POINT_RAY_TRACING_KHR = 1000165000,
+    BIND_POINT_SUBPASS_SHADING_HUAWEI = 1000369003,
+    BIND_POINT_RAY_TRACING_NV = BIND_POINT_RAY_TRACING_KHR,
+} PipelineBindPoint;

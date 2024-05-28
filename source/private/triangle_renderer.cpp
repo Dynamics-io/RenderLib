@@ -9,9 +9,12 @@
 #include "vk_shader.h"
 #include "vk_image.h"
 #include "vk_fence.h"
+#include "vk_semaphore.h"
 #include "vk_command_pool.h"
 #include "vk_command_buffer.h"
+#include "vk_framebuffer.h"
 
+#include <glm/glm.hpp>
 #include <array>
 
 using namespace render_vk;
@@ -52,7 +55,20 @@ bool Triangle_Renderer_p::Resize()
 
 bool Triangle_Renderer_p::Step(double dt)
 {
-    
+    uint32_t index;
+
+    VkResult aquire_res = acquire_next_image(&index);
+
+    if (aquire_res == VK_SUBOPTIMAL_KHR || aquire_res == VK_ERROR_OUT_OF_DATE_KHR) {
+        Resize();
+        aquire_res = acquire_next_image(&index);
+    }
+
+    if (aquire_res != VK_SUCCESS) {
+        return true;
+    }
+
+
 
 
     return true;
@@ -208,20 +224,12 @@ void render_vk::Triangle_Renderer_p::init_pipeline()
     dynamic_info.pDynamicStates = dynamics.data();
     dynamic_info.dynamicStateCount = render_vk::to_u32(dynamics.size());
     
-
-    LOGI("Loading shaders");
-
     m_vert_shader = Get_Shader("triangle.vert");
-    LOGI("get vert shader");
-    
     m_frag_shader = Get_Shader("triangle.frag");
-    LOGI("get frag shader");
 
     std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages{};
     shader_stages[0] = m_vert_shader->Get_Create_Info();
-    LOGI("get vert info");
     shader_stages[1] = m_frag_shader->Get_Create_Info();
-    LOGI("get frag info");
 
     LOGI("Finish loading shaders");
 
@@ -246,7 +254,71 @@ void render_vk::Triangle_Renderer_p::init_pipeline()
     m_frag_shader->Finalize();
 }
 
+VkResult Triangle_Renderer_p::acquire_next_image(uint32_t* image)
+{
+    
+    VK_Semaphore_p* acquire_semaphore;
+    if (recycled_semaphores.empty()) {
+        acquire_semaphore = m_Device->Create_Semaphore();
+    }
+    else {
+        acquire_semaphore = recycled_semaphores.back();
+        recycled_semaphores.pop_back();
+    }
 
+    VkResult res = m_Swapchain->Acquire_Next_Image_Index(UINT64_MAX, acquire_semaphore, nullptr, image);
+
+    if (res != VK_SUCCESS) {
+        recycled_semaphores.push_back(acquire_semaphore);
+        return res;
+    }
+
+
+    // If we have outstanding fences for this swapchain image, wait for them to complete first.
+    // After begin frame returns, it is safe to reuse or delete resources which
+    // were used previously.
+    //
+    // We wait for fences which completes N frames earlier, so we do not stall,
+    // waiting for all GPU work to complete before this returns.
+    // Normally, this doesn't really block at all,
+    // since we're waiting for old frames to have been completed, but just in case.
+    if (m_per_frame[*image].Queue_Submit_Fence != nullptr) {
+        m_per_frame[*image].Queue_Submit_Fence->Wait();
+        m_per_frame[*image].Queue_Submit_Fence->Reset();
+    }
+
+    if (m_per_frame[*image].Primary_Command_Pool != nullptr) {
+        m_per_frame[*image].Primary_Command_Pool->Reset();
+    }
+    
+    // Recycle the old semaphore back into the semaphore manager.
+    VK_Semaphore_p* old_aquire_semaphore = m_per_frame[*image].Swapchain_Acquire_Semaphore;
+
+    if (old_aquire_semaphore != nullptr) {
+        recycled_semaphores.push_back(old_aquire_semaphore);
+    }
+
+    m_per_frame[*image].Swapchain_Acquire_Semaphore = acquire_semaphore;
+
+    return VK_SUCCESS;
+}
+
+void render_vk::Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
+{
+    VK_Framebuffer_p* frame_buffer = Get_Swapchain_Framebuffer(swapchain_index);
+
+    VK_CommandBuffer_p* cmd = m_per_frame[swapchain_index].primary_command_buffer;
+
+    cmd->Begin();
+
+    cmd->Begin_Render_Pass(m_render_pass, frame_buffer, glm::vec4(0.01f, 0.01f, 0.033f, 1.0f));
+
+    cmd->Bind_Pipeline(m_Pipeline, PipelineBindPoint::BIND_POINT_GRAPHICS);
+
+
+
+
+}
 
 
 

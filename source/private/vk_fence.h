@@ -14,6 +14,22 @@ namespace render_vk {
 			return m_fence;
 		}
 
+		VK_Device_p* Device() {
+			return m_Device;
+		}
+
+		VkResult Wait();
+
+		VkResult Wait(uint64_t timeout);
+
+		static VkResult Wait(std::vector<VK_Fence_p*> fences, bool waitAll);
+
+		static VkResult Wait(std::vector<VK_Fence_p*> fences, bool waitAll, uint64_t timeout);
+
+		VkResult Reset();
+
+		static VkResult Reset(std::vector<VK_Fence_p*> fences);
+
 		void Dispose();
 
 	private:

@@ -12,6 +12,7 @@ namespace render_vk {
 	class VK_Fence_p;
 	class VK_CommandPool_p;
 	class VK_CommandBuffer_p;
+	class VK_Semaphore_p;
 
 	class Triangle_Renderer_p : public Renderer_p {
 	public:
@@ -38,6 +39,7 @@ namespace render_vk {
 
 			VK_CommandBuffer_p* primary_command_buffer;
 
+			VK_Semaphore_p* Swapchain_Acquire_Semaphore;
 		};
 
 
@@ -60,11 +62,20 @@ namespace render_vk {
 
 		//std::vector<VK_Framebuffer_p*> m_swapchain_framebuffers;
 
+		/// A set of semaphores that can be reused.
+		std::vector<VK_Semaphore_p*> recycled_semaphores;
+
 		void init_per_frame(int num);
 		void init_render_pass();
 		void init_pipeline();
 
 		void destroy_per_frame();
+
+
+
+		VkResult acquire_next_image(uint32_t* image);
+
+		void render_triangle(uint32_t swapchain_index);
 
 	};
 

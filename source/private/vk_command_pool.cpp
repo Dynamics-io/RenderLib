@@ -23,6 +23,17 @@ VK_CommandBuffer_p* render_vk::VK_CommandPool_p::Create_CommandBuffer(bool is_se
 	return new VK_CommandBuffer_p(m_Device, this, is_secondary, count);
 }
 
+VkResult render_vk::VK_CommandPool_p::Reset(bool release_resources)
+{
+
+	VkCommandPoolResetFlags flags = 0;
+	if (release_resources) {
+		flags = VkCommandPoolResetFlagBits::VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT;
+	}
+
+	return vkResetCommandPool(m_Device->Handle(), m_pool, flags);
+}
+
 void render_vk::VK_CommandPool_p::Dispose()
 {
 	// TODO: Iterate through and destroy command buffers.

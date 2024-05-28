@@ -4,6 +4,7 @@
 #include "vk_queue.h"
 #include "vk_swapchain.h"
 #include "vk_fence.h"
+#include "vk_semaphore.h"
 #include "vk_command_pool.h"
 #include "vk_shader.h"
 #include "vk_framebuffer.h"
@@ -55,6 +56,11 @@ VK_Swapchain_p* render_vk::VK_Device_p::Create_Swapchain(VkSurfaceKHR surface)
 VK_Fence_p* render_vk::VK_Device_p::Create_Fence(bool signaled)
 {
 	return new VK_Fence_p(this, signaled);
+}
+
+VK_Semaphore_p* render_vk::VK_Device_p::Create_Semaphore()
+{
+	return new VK_Semaphore_p(this);
 }
 
 VK_CommandPool_p* render_vk::VK_Device_p::Create_Command_Pool(uint32_t queue_family, CommandPoolCreateFlag flags)

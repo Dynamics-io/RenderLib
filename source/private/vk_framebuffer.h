@@ -12,11 +12,25 @@ namespace render_vk {
 	public:
 		~VK_Framebuffer_p();
 
+		VkFramebuffer Handle() {
+			return m_framebuffer;
+		}
+
+		uint32_t Width() {
+			return m_width;
+		}
+
+		uint32_t Height() {
+			return m_height;
+		}
+
 		void Dispose();
 
 	private:
 		VK_Device_p* m_Device{ nullptr };
 		VkFramebuffer m_framebuffer{ VK_NULL_HANDLE };
+		uint32_t m_width{ 0 };
+		uint32_t m_height{ 0 };
 
 		VK_Framebuffer_p(VK_Device_p* device,
 			VkRenderPass render_pass,

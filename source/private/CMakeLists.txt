@@ -15,6 +15,7 @@ set(${PROJECT_NAME}_headers
 	vk_command_buffer.h
 	vk_shader.h
 	vk_framebuffer.h
+	vk_semaphore.h
 	shader_depository.h
 	instance.h
 	window.h
@@ -41,6 +42,7 @@ set(${PROJECT_NAME}_sources
 	vk_command_buffer.cpp
 	vk_shader.cpp
 	vk_framebuffer.cpp
+	vk_semaphore.cpp
 	shader_depository.cpp
 	window_glfw.cpp
 	renderer.cpp

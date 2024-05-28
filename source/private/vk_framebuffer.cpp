@@ -40,6 +40,9 @@ void render_vk::VK_Framebuffer_p::create(VkRenderPass render_pass, VkImageView* 
     fb_info.height = height;
     fb_info.layers = layers;
 
+    m_width = width;
+    m_height = height;
+
     VK_CHECK_THROW(vkCreateFramebuffer(m_Device->Handle(), &fb_info, nullptr, &m_framebuffer));
 }
 

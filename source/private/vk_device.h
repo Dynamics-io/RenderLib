@@ -13,9 +13,11 @@ namespace render_vk {
 	class VK_Queue_p;
 	class VK_Swapchain_p;
 	class VK_Fence_p;
+	class VK_Semaphore_p;
 	class VK_CommandPool_p;
 	class VK_Shader_p;
 	class VK_Framebuffer_p;
+	
 
 	class VK_Device_p {
 		friend class VK_Physical_Device_p;
@@ -36,6 +38,8 @@ namespace render_vk {
 		VK_Swapchain_p* Create_Swapchain(VkSurfaceKHR surface);
 
 		VK_Fence_p* Create_Fence(bool signaled);
+
+		VK_Semaphore_p* Create_Semaphore();
 
 		VK_CommandPool_p* Create_Command_Pool(uint32_t queue_family, CommandPoolCreateFlag flags);
 
