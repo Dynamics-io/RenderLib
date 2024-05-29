@@ -190,11 +190,11 @@ namespace render_vk {
 
 		void Setup_Framebuffers(VkRenderPass render_pass);
 
-		void Destroy_Framebuffers();
+		void Destroy_Framebuffers(bool wait_idle = true);
 
 		VK_Framebuffer_p* Get_Swapchain_Framebuffer(int index) {
 			if (index >= m_swapchain_framebuffers.size()) {
-				std::runtime_error("Get_Swapchain_Framebuffer: index >= swapchain frame buffer size");
+				throw std::runtime_error("Get_Swapchain_Framebuffer: index >= swapchain frame buffer size");
 			}
 			return m_swapchain_framebuffers[index];
 		}

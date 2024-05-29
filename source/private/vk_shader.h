@@ -20,6 +20,8 @@ namespace render_vk {
 
 		void Finalize();
 
+		void Dispose();
+
 		VkPipelineShaderStageCreateInfo Get_Create_Info();
 
 	private:

@@ -50,7 +50,23 @@ bool Triangle_Renderer_p::Setup()
 
 bool Triangle_Renderer_p::Resize()
 {
-    return false;
+     VkSurfaceCapabilitiesKHR surface_properties = m_GPU->Get_Surface_Capabilities(Get_VkSurface());
+
+     if (surface_properties.currentExtent.width == m_Swapchain->Width() &&
+         surface_properties.currentExtent.height == m_Swapchain->Height()) {
+         return true;
+     }
+
+     m_Device->Wait_Idle();
+
+     Destroy_Framebuffers(false);
+     m_Swapchain->Refresh();
+
+     Setup_Framebuffers(m_render_pass);
+
+     LOGI("Resize Successfull");
+
+    return true;
 }
 
 bool Triangle_Renderer_p::Step(double dt)
@@ -68,15 +84,51 @@ bool Triangle_Renderer_p::Step(double dt)
         return true;
     }
 
+    render_triangle(index);
+    VkResult present_res = present_image(index);
 
-
+    // Handle Outdated error in present.
+    if (present_res == VK_SUBOPTIMAL_KHR || present_res == VK_ERROR_OUT_OF_DATE_KHR) {
+        Resize();
+    }
+    else if (present_res != VK_SUCCESS)
+    {
+        LOGE("Failed to present swapchain image.");
+    }
 
     return true;
 }
 
 bool Triangle_Renderer_p::Cleanup()
 {
+    m_Device->Wait_Idle();
 
+    Destroy_Framebuffers(false);
+
+    destroy_per_frame();
+
+    m_per_frame.clear();
+
+    for (auto& sem : recycled_semaphores) {
+        sem->Dispose();
+        delete sem;
+    }
+    recycled_semaphores.clear();
+
+    if (m_Pipeline != VK_NULL_HANDLE)
+    {
+        vkDestroyPipeline(m_Device->Handle(), m_Pipeline, nullptr);
+    }
+
+    if (m_pipeline_layout != VK_NULL_HANDLE)
+    {
+        vkDestroyPipelineLayout(m_Device->Handle(), m_pipeline_layout, nullptr);
+    }
+
+    if (m_render_pass != VK_NULL_HANDLE)
+    {
+        vkDestroyRenderPass(m_Device->Handle(), m_render_pass, nullptr);
+    }
 
 
     return true;
@@ -105,10 +157,16 @@ void render_vk::Triangle_Renderer_p::destroy_per_frame()
 {
     for (int i = 0; i < m_per_frame.size(); i++) {
         m_per_frame[i].Queue_Submit_Fence->Dispose();
+        delete m_per_frame[i].Queue_Submit_Fence;
+        m_per_frame[i].Queue_Submit_Fence = nullptr;
 
         m_per_frame[i].primary_command_buffer->Dispose();
+        delete m_per_frame[i].primary_command_buffer;
+        m_per_frame[i].primary_command_buffer = nullptr;
 
         m_per_frame[i].Primary_Command_Pool->Dispose();
+        delete m_per_frame[i].Primary_Command_Pool;
+        m_per_frame[i].Primary_Command_Pool = nullptr;
     }
 }
 
@@ -273,6 +331,10 @@ VkResult Triangle_Renderer_p::acquire_next_image(uint32_t* image)
         return res;
     }
 
+    if (*image >= m_Swapchain->Image_Count()) {
+        throw std::runtime_error("Aquired image out of bounds");
+    }
+    
 
     // If we have outstanding fences for this swapchain image, wait for them to complete first.
     // After begin frame returns, it is safe to reuse or delete resources which
@@ -303,8 +365,9 @@ VkResult Triangle_Renderer_p::acquire_next_image(uint32_t* image)
     return VK_SUCCESS;
 }
 
-void render_vk::Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
+void Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
 {
+
     VK_Framebuffer_p* frame_buffer = Get_Swapchain_Framebuffer(swapchain_index);
 
     VK_CommandBuffer_p* cmd = m_per_frame[swapchain_index].primary_command_buffer;
@@ -315,9 +378,37 @@ void render_vk::Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
 
     cmd->Bind_Pipeline(m_Pipeline, PipelineBindPoint::BIND_POINT_GRAPHICS);
 
+    cmd->Set_Viewport(glm::vec4(
+        static_cast<float>(m_Swapchain->Width()),
+        static_cast<float>(m_Swapchain->Height()),
+        0.0f,
+        1.0f
+    ));
+
+    cmd->Set_Scissor(glm::vec2(
+        static_cast<float>(m_Swapchain->Width()),
+        static_cast<float>(m_Swapchain->Height())
+    ));
+
+    cmd->Draw(3, 1, 0, 0);
+
+    VK_CHECK_THROW(cmd->End());
+
+    if (m_per_frame[swapchain_index].Swapchain_Release_Semaphore == nullptr) {
+        m_per_frame[swapchain_index].Swapchain_Release_Semaphore = m_Device->Create_Semaphore();
+    }
+
+    m_Queue->Submit(cmd, 
+        m_per_frame[swapchain_index].Swapchain_Acquire_Semaphore, 
+        m_per_frame[swapchain_index].Swapchain_Release_Semaphore, 
+        m_per_frame[swapchain_index].Queue_Submit_Fence);
 
 
+}
 
+VkResult Triangle_Renderer_p::present_image(uint32_t swapchain_index)
+{
+    return m_Queue->Present(m_Swapchain, swapchain_index, m_per_frame[swapchain_index].Swapchain_Release_Semaphore);
 }
 
 

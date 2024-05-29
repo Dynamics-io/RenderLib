@@ -17,6 +17,10 @@ namespace render_vk {
 		friend class VK_Device_p;
 	public:
 
+		VkSwapchainKHR Handle() {
+			return m_swapchain;
+		}
+
 		uint32_t Width() {
 			return m_width;
 		}
@@ -49,6 +53,8 @@ namespace render_vk {
 		int Image_Count() {
 			return m_swapChainImages.size();
 		}
+
+		void Dispose();
 
 	private:
 		VkSwapchainKHR m_swapchain{ VK_NULL_HANDLE };

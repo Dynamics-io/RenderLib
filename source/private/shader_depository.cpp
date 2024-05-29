@@ -91,7 +91,7 @@ void Shader_Depository_p::LoadAll(const std::string& path)
 
 }
 
-VK_Shader_p* render_vk::Shader_Depository_p::Get_Shader(const std::string& name)
+VK_Shader_p* Shader_Depository_p::Get_Shader(const std::string& name)
 {
 	// TODO: sanity check
 	if (m_shaders.count(name) <= 0) {
@@ -100,4 +100,13 @@ VK_Shader_p* render_vk::Shader_Depository_p::Get_Shader(const std::string& name)
 
 	return m_shaders[name];
 
+}
+
+void Shader_Depository_p::Dispose()
+{
+	for (const auto& pair : m_shaders) {
+		pair.second->Dispose();
+		delete pair.second;
+	}
+	m_shaders.clear();
 }

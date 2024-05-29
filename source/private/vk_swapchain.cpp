@@ -19,6 +19,13 @@ VK_Swapchain_p::VK_Swapchain_p(VK_Device_p* device, VkSurfaceKHR surface) :
 	create_swapchain();
 }
 
+void render_vk::VK_Swapchain_p::Dispose()
+{
+	destroy_images();
+
+	vkDestroySwapchainKHR(m_device->Handle(), m_swapchain, nullptr);
+}
+
 void VK_Swapchain_p::set_swapchain_info()
 {
 	
@@ -134,6 +141,8 @@ void VK_Swapchain_p::create_images()
 {
 	m_vk_swapChainImages = get_vk_images();
 
+	m_swapChainImages.clear();
+
 	for (int i = 0; i < m_vk_swapChainImages.size(); i++) {
 
 		ImageViewBuildInfo view_info{};
@@ -146,6 +155,8 @@ void VK_Swapchain_p::create_images()
 		VK_Image_p* image = new VK_Image_p(m_device, m_vk_swapChainImages[i], view_info);
 		m_swapChainImages.push_back(image);
 	}
+
+	LOGI("Created {} swapchain images", render_vk::to_string(m_swapChainImages.size()));
 
 }
 

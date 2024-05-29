@@ -18,6 +18,8 @@ namespace render_vk {
 
 		VK_Shader_p* Get_Shader(const std::string& name);
 
+		void Dispose();
+
 	private:
 
 		std::string m_Path;

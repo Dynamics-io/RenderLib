@@ -243,12 +243,29 @@ bool Renderer_p::Finalize()
 
 	Dispose();
 
+	LOGI("Disposing shader store");
+	m_shader_store->Dispose();
+
+	LOGI("Disposing device");
+	m_Device->Dispose();
+
 	if (!Is_Headless()) {
+
+		LOGI("Disposing vulkan surface");
+		vkDestroySurfaceKHR(m_Instance->get_handle(), m_Surface, nullptr);
+		m_Surface = VK_NULL_HANDLE;
+
+		LOGI("Disposing Window");
 		m_Window->Dispose();
 	}
 
+	LOGI("Disposing vulkan instance");
+	m_Instance->Dispose();
+
 	m_Is_Initialized = false;
 	m_Is_Finalized = true; // TODO: probably should do a proper state machine.
+
+	LOGI("{} finalized", Get_Name());
 
 	return true;
 }
@@ -256,6 +273,10 @@ bool Renderer_p::Finalize()
 bool Renderer_p::Dispose()
 {
 	bool status = true;
+
+	if (!m_Is_Setup) {
+		return false;
+	}
 
 	// Clean up from top-down.
 
@@ -275,6 +296,9 @@ bool Renderer_p::Dispose()
 			break;
 		}
 	}
+
+	LOGI("Disposing swapchain");
+	m_Swapchain->Dispose();
 
 	return status;
 }
@@ -382,17 +406,24 @@ VK_Shader_p* Renderer_p::Get_Shader(std::string name)
 void Renderer_p::Setup_Framebuffers(VkRenderPass render_pass)
 {
 	m_swapchain_framebuffers.clear();
+	m_swapchain_framebuffers.reserve(m_Swapchain->Image_Count());
 
 	// Create framebuffer for each swapchain image view
 	for (int i = 0; i < m_Swapchain->Image_Count(); i++) {
 
 		// Build the framebuffer.
-		m_swapchain_framebuffers.push_back(Create_Swapchain_Framebuffer(render_pass, i++));
+		m_swapchain_framebuffers.push_back(Create_Swapchain_Framebuffer(render_pass, i));
 	}
+
+	LOGI("Created {} swapchain framebuffers", render_vk::to_string(m_swapchain_framebuffers.size()));
 }
 
-void render_vk::Renderer_p::Destroy_Framebuffers()
+void render_vk::Renderer_p::Destroy_Framebuffers(bool wait_idle)
 {
+	if (wait_idle) {
+		m_Device->Wait_Idle();
+	}
+
 	for (int i = 0; i < m_Swapchain->Image_Count(); i++) {
 		m_swapchain_framebuffers[i]->Dispose();
 		delete m_swapchain_framebuffers[i];

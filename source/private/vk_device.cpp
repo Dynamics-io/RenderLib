@@ -48,32 +48,43 @@ void VK_Device_p::Load_Queues(uint32_t family, uint32_t num)
 	LOGI("Adding {} queues to family {}", render_vk::to_string(queues.size()), render_vk::to_string(family));
 }
 
-VK_Swapchain_p* render_vk::VK_Device_p::Create_Swapchain(VkSurfaceKHR surface)
+VK_Swapchain_p* VK_Device_p::Create_Swapchain(VkSurfaceKHR surface)
 {
 	return new VK_Swapchain_p(this, surface);
 }
 
-VK_Fence_p* render_vk::VK_Device_p::Create_Fence(bool signaled)
+VK_Fence_p* VK_Device_p::Create_Fence(bool signaled)
 {
 	return new VK_Fence_p(this, signaled);
 }
 
-VK_Semaphore_p* render_vk::VK_Device_p::Create_Semaphore()
+VK_Semaphore_p* VK_Device_p::Create_Semaphore()
 {
 	return new VK_Semaphore_p(this);
 }
 
-VK_CommandPool_p* render_vk::VK_Device_p::Create_Command_Pool(uint32_t queue_family, CommandPoolCreateFlag flags)
+VK_CommandPool_p* VK_Device_p::Create_Command_Pool(uint32_t queue_family, CommandPoolCreateFlag flags)
 {
 	return new VK_CommandPool_p(this, queue_family, flags);
 }
 
-VK_Shader_p* render_vk::VK_Device_p::Create_Shader()
+VK_Shader_p* VK_Device_p::Create_Shader()
 {
 	return new VK_Shader_p(this);
 }
 
-VK_Framebuffer_p* render_vk::VK_Device_p::Create_Swapchain_Framebuffer(VK_Swapchain_p* swapchain, VkRenderPass render_pass, int image_index)
+VK_Framebuffer_p* VK_Device_p::Create_Swapchain_Framebuffer(VK_Swapchain_p* swapchain, VkRenderPass render_pass, int image_index)
 {
 	return new VK_Framebuffer_p(this, swapchain, render_pass, image_index);
+}
+
+VkResult VK_Device_p::Wait_Idle()
+{
+	return vkDeviceWaitIdle(m_handle);
+}
+
+void VK_Device_p::Dispose()
+{
+	vkDestroyDevice(m_handle, nullptr);
+	m_handle = VK_NULL_HANDLE;
 }

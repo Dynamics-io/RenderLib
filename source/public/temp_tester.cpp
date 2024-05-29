@@ -25,11 +25,8 @@ Tester::~Tester()
 
 void Tester::Run()
 {
-	
 	m_thread = std::thread(&run_main_loop, this);
 	m_thread.join();
-
-	m_traingle_renderer->Dispose();
 }
 
 void run_main_loop(Tester* inst) {
@@ -74,6 +71,12 @@ void Tester::main_loop()
 			break;
 		}
 	}
+
+	if (!m_traingle_renderer->Is_Finalized()) {
+		m_traingle_renderer->Finalize();
+	}
+
+	//delete m_traingle_renderer;
 }
 
 void Tester::OnKeyDown(KeyInputEvent key_event)
@@ -81,6 +84,7 @@ void Tester::OnKeyDown(KeyInputEvent key_event)
 	m_logger->Log_Info("OnKeyDown: " + std::to_string((int)key_event.get_code()) + ", Action: " + std::to_string((int)key_event.get_action()));
 	if (key_event.get_code() == KeyCode::Escape &&
 		key_event.get_action() == KeyAction::Up) {
+
 		m_run = false;
 	}
 

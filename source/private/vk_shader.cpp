@@ -42,9 +42,9 @@ VK_Shader_p::VK_Shader_p(VK_Device_p* device, const std::string& filePath) :
 {
 }
 
-render_vk::VK_Shader_p::~VK_Shader_p()
+VK_Shader_p::~VK_Shader_p()
 {
-	Finalize();
+	Dispose();
 }
 
 bool VK_Shader_p::Load(const std::string& filePath)
@@ -72,7 +72,17 @@ bool render_vk::VK_Shader_p::Load()
 
 void render_vk::VK_Shader_p::Finalize()
 {
+	if (m_shaderModule == VK_NULL_HANDLE) {
+		return;
+	}
+
 	vkDestroyShaderModule(m_Device->Handle(), m_shaderModule, nullptr);
+	m_shaderModule = VK_NULL_HANDLE;
+}
+
+void render_vk::VK_Shader_p::Dispose()
+{
+	Finalize();
 }
 
 VkPipelineShaderStageCreateInfo VK_Shader_p::Get_Create_Info()

@@ -47,6 +47,10 @@ namespace render_vk {
 
 		VK_Framebuffer_p* Create_Swapchain_Framebuffer(VK_Swapchain_p* swapchain, VkRenderPass render_pass, int image_index);
 
+		VkResult Wait_Idle();
+
+		void Dispose();
+
 	private:
 
 		VkDevice m_handle{ VK_NULL_HANDLE };

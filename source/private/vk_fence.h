@@ -2,6 +2,8 @@
 
 #include "vk_common.h"
 
+#include <vector>
+
 namespace render_vk {
 	
 	class VK_Device_p;

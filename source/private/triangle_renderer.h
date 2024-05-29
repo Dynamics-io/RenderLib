@@ -40,6 +40,8 @@ namespace render_vk {
 			VK_CommandBuffer_p* primary_command_buffer;
 
 			VK_Semaphore_p* Swapchain_Acquire_Semaphore;
+
+			VK_Semaphore_p* Swapchain_Release_Semaphore;
 		};
 
 
@@ -76,6 +78,8 @@ namespace render_vk {
 		VkResult acquire_next_image(uint32_t* image);
 
 		void render_triangle(uint32_t swapchain_index);
+
+		VkResult present_image(uint32_t swapchain_index);
 
 	};
 
