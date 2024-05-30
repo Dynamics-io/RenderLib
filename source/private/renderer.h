@@ -17,6 +17,7 @@ namespace render_vk {
 	class Shader_Depository_p;
 	class VK_Shader_p;
 	class VK_Framebuffer_p;
+	class Buffer_Allocator_p;
 
 	class Renderer_p {
 	public:
@@ -211,6 +212,7 @@ namespace render_vk {
 		VK_Device_p* m_Device{ nullptr };
 		VK_Swapchain_p* m_Swapchain{ nullptr };
 		Shader_Depository_p* m_shader_store{ nullptr };
+		Buffer_Allocator_p* m_allocator{ nullptr };
 		bool m_Is_Finalized{ false };
 		// End Root-only fields.
 

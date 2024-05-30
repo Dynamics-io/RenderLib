@@ -15,6 +15,10 @@ namespace render_vk {
 
 		VK_Physical_Device_p(Instance_p* instance, VkPhysicalDevice device);
 
+		VkPhysicalDevice Handle() {
+			return m_device;
+		}
+
 		std::vector<VkQueueFamilyProperties> Get_Queue_Family_Properties();
 
 		VkBool32 Get_Physical_Device_Surface_Support(VkSurfaceKHR surface, uint32_t queue_family_index);
@@ -24,6 +28,12 @@ namespace render_vk {
 		VkSurfaceCapabilitiesKHR Get_Surface_Capabilities(VkSurfaceKHR surface);
 
 		std::vector<VkSurfaceFormatKHR> Get_Surface_Formats(VkSurfaceKHR surface);
+
+		bool Is_Extension_Supported(const std::string& requested_extension) const;
+
+		void Set_Active_Extensions(std::vector<const char*> active_extensions);
+
+		bool Is_Extension_Enabled(const char* extension);
 
 		VkSurfaceFormatKHR Select_Surface_Format(
 			VkSurfaceKHR surface, 
@@ -41,6 +51,9 @@ namespace render_vk {
 
 		Instance_p* m_Instance{ nullptr };
 		VkPhysicalDevice m_device{ VK_NULL_HANDLE };
+
+		std::vector<VkExtensionProperties> m_device_extensions;
+		std::vector<const char*> m_active_extensions;
 	};
 
 }

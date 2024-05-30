@@ -81,3 +81,9 @@ typedef enum PipelineBindPoint {
     BIND_POINT_SUBPASS_SHADING_HUAWEI = 1000369003,
     BIND_POINT_RAY_TRACING_NV = BIND_POINT_RAY_TRACING_KHR,
 } PipelineBindPoint;
+
+
+
+struct BufferBuildInfo {
+
+};

@@ -13,6 +13,7 @@ VK_Physical_Device_p::VK_Physical_Device_p(Instance_p* instance, VkPhysicalDevic
 	m_Instance { instance },
 	m_device {device}
 {
+	m_device_extensions = Get_Device_Extension_Properties();
 }
 
 std::vector<VkQueueFamilyProperties> VK_Physical_Device_p::Get_Queue_Family_Properties()
@@ -66,6 +67,24 @@ std::vector<VkSurfaceFormatKHR> VK_Physical_Device_p::Get_Surface_Formats(VkSurf
 	VK_CHECK_RET(vkGetPhysicalDeviceSurfaceFormatsKHR(m_device, surface, &surface_format_count, supported_surface_formats.data()), supported_surface_formats);
 
 	return supported_surface_formats;
+}
+
+bool VK_Physical_Device_p::Is_Extension_Supported(const std::string& requested_extension) const
+{
+	return std::find_if(m_device_extensions.begin(), m_device_extensions.end(),
+		[requested_extension](auto& device_extension) {
+			return std::strcmp(device_extension.extensionName, requested_extension.c_str()) == 0;
+		}) != m_device_extensions.end();
+}
+
+void VK_Physical_Device_p::Set_Active_Extensions(std::vector<const char*> active_extensions)
+{
+	m_active_extensions = active_extensions;
+}
+
+bool VK_Physical_Device_p::Is_Extension_Enabled(const char* extension)
+{
+	return std::find_if(m_active_extensions.begin(), m_active_extensions.end(), [extension](const char* enabled_extension) { return strcmp(extension, enabled_extension) == 0; }) != m_active_extensions.end();
 }
 
 VkSurfaceFormatKHR VK_Physical_Device_p::Select_Surface_Format(VkSurfaceKHR surface, std::vector<VkFormat> const& preferred_formats)

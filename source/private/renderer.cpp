@@ -9,6 +9,7 @@
 #include "vk_swapchain.h"
 #include "vk_framebuffer.h"
 #include "shader_depository.h"
+#include "buffer_allocator.h"
 
 using namespace render_vk;
 
@@ -88,6 +89,9 @@ bool Renderer_p::init(RendererBuildInfo info)
 		LOGE("Failed to load logical device!");
 		return false;
 	}
+
+	m_allocator = new Buffer_Allocator_p();
+	m_allocator->Init(m_Instance, &m_PhysicalDevice, m_Device);
 
 
 	m_shader_store = new Shader_Depository_p(m_Device);
@@ -246,6 +250,9 @@ bool Renderer_p::Finalize()
 	LOGI("Disposing shader store");
 	m_shader_store->Dispose();
 
+	LOGI("Disposing buffer allocator");
+	m_allocator->Dispose();
+
 	LOGI("Disposing device");
 	m_Device->Dispose();
 
@@ -357,6 +364,8 @@ bool Renderer_p::set_default_device()
 		throw std::runtime_error("No physical device found.");
 	}
 
+	// TODO: All of this needs to be refactored.
+
 	VK_Physical_Device_p device;
 
 	for (size_t i = 0; i < gpus.size() && (m_graphics_queue_index < 0); i++) {
@@ -390,6 +399,7 @@ bool Renderer_p::set_default_device()
 	}
 
 	m_PhysicalDevice = device;
+	m_PhysicalDevice.Set_Active_Extensions(m_BuildInfo.Device_Required_Extensions);
 
 	return true;
 }
