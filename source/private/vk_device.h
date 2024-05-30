@@ -17,7 +17,7 @@ namespace render_vk {
 	class VK_CommandPool_p;
 	class VK_Shader_p;
 	class VK_Framebuffer_p;
-	
+	class VK_Buffer_p;
 
 	class VK_Device_p {
 		friend class VK_Physical_Device_p;
@@ -46,6 +46,8 @@ namespace render_vk {
 		VK_Shader_p* Create_Shader();
 
 		VK_Framebuffer_p* Create_Swapchain_Framebuffer(VK_Swapchain_p* swapchain, VkRenderPass render_pass, int image_index);
+
+		VK_Buffer_p* Create_Buffer(BufferBuildInfo info);
 
 		VkResult Wait_Idle();
 

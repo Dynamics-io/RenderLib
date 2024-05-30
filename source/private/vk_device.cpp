@@ -8,6 +8,7 @@
 #include "vk_command_pool.h"
 #include "vk_shader.h"
 #include "vk_framebuffer.h"
+#include "vk_buffer.h"
 
 using namespace render_vk;
 
@@ -76,6 +77,11 @@ VK_Shader_p* VK_Device_p::Create_Shader()
 VK_Framebuffer_p* VK_Device_p::Create_Swapchain_Framebuffer(VK_Swapchain_p* swapchain, VkRenderPass render_pass, int image_index)
 {
 	return new VK_Framebuffer_p(this, swapchain, render_pass, image_index);
+}
+
+VK_Buffer_p* render_vk::VK_Device_p::Create_Buffer(BufferBuildInfo info)
+{
+	return new VK_Buffer_p(this, info);
 }
 
 VkResult VK_Device_p::Wait_Idle()
