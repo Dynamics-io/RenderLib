@@ -22,6 +22,7 @@ struct RendererBuildInfo {
 	std::vector<const char*> Device_Required_Extensions;
 
 	std::string Shader_Directory;
+	std::string Assets_Directory;
 
 };
 

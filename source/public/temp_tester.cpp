@@ -1,6 +1,7 @@
 #include "temp_tester.h"
 
 #include "../private/triangle_renderer.h"
+#include "../private/texture_loading_renderer.h"
 #include "../private/window.h"
 #include "../private/window_glfw.h"
 
@@ -49,8 +50,9 @@ void Tester::main_loop()
 	info.Instance_Info.Instance_Type = InstanceType::Create_VK_Instance;
 
 	info.Shader_Directory = std::string(CMAKE_ROOT_DIR) + "\\shaders\\" + shader_folder + "\\bin";
+	info.Assets_Directory = std::string(CMAKE_ROOT_DIR) + "\\assets\\" + shader_folder + "\\bin";
 
-	m_traingle_renderer = Renderer_p::Create<Triangle_Renderer_p>(info);
+	m_traingle_renderer = Renderer_p::Create<Texture_Loading_Renderer_p>(info);
 
 	if (m_traingle_renderer->Has_Window()) {
 		m_Window = dynamic_cast<Window_GLFW_p*>(m_traingle_renderer->Get_Window());

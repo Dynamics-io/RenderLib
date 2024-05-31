@@ -9,6 +9,7 @@
 #include "vk_swapchain.h"
 #include "vk_framebuffer.h"
 #include "shader_depository.h"
+#include "asset_store.h"
 #include "buffer_allocator.h"
 #include "vk_command_pool.h"
 #include "vk_command_buffer.h"
@@ -101,6 +102,9 @@ bool Renderer_p::init(RendererBuildInfo info)
 
 	m_shader_store = new Shader_Depository_p(m_Device);
 	m_shader_store->LoadAll(info.Shader_Directory);
+
+	m_assets_store = new Assets_Store_p();
+	m_assets_store->LoadAll(info.Assets_Directory);
 
 	m_Is_Initialized = true;
 	LOGI("Renderer '{}' Initialized.", Get_Name());

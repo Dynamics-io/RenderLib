@@ -15,6 +15,7 @@ namespace render_vk {
 	class VK_Device_P;
 	class VK_Swapchain_p;
 	class Shader_Depository_p;
+	class Assets_Store_p;
 	class VK_Shader_p;
 	class VK_Framebuffer_p;
 	class Buffer_Allocator_p;
@@ -155,6 +156,12 @@ namespace render_vk {
 			return m_swapchain_index;
 		}
 
+		Assets_Store_p* Get_Assets_Store() {
+			if (!Is_Root()) {
+				return m_Parent->Get_Assets_Store();
+			}
+			return m_assets_store;
+		}
 
 		VK_Framebuffer_p* Create_Swapchain_Framebuffer(VkRenderPass render_pass, int image_index);
 
@@ -250,6 +257,7 @@ namespace render_vk {
 		VK_Device_p* m_Device{ nullptr };
 		VK_Swapchain_p* m_Swapchain{ nullptr };
 		Shader_Depository_p* m_shader_store{ nullptr };
+		Assets_Store_p* m_assets_store{ nullptr };
 		Buffer_Allocator_p* m_allocator{ nullptr };
 		std::vector<PerFramePresent> m_per_frame;
 		VK_CommandPool_p* m_Primary_Command_Pool{ nullptr };

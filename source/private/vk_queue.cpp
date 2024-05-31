@@ -43,19 +43,22 @@ VkResult VK_Queue_p::Submit(
 	std::vector<VkCommandBuffer> vk_buffers;
 	vk_buffers.reserve(cmd_buffers.size());
 	for (auto& buffer : cmd_buffers) {
-		vk_buffers.push_back(buffer->Handle(0)); // TODO: how do we specify other buffers?
+		if (buffer != nullptr)
+			vk_buffers.push_back(buffer->Handle(0)); // TODO: how do we specify other buffers?
 	}
 
 	std::vector<VkSemaphore> vk_wait_semaphores;
 	vk_wait_semaphores.reserve(wait_semaphores.size());
 	for (auto& sem : wait_semaphores) {
-		vk_wait_semaphores.push_back(sem->Handle());
+		if (sem != nullptr)
+			vk_wait_semaphores.push_back(sem->Handle());
 	}
 
 	std::vector<VkSemaphore> vk_signal_semaphores;
 	vk_signal_semaphores.reserve(signal_semaphores.size());
 	for (auto& sem : signal_semaphores) {
-		vk_signal_semaphores.push_back(sem->Handle());
+		if (sem != nullptr)
+			vk_signal_semaphores.push_back(sem->Handle());
 	}
 
 	VkSubmitInfo info{ VK_STRUCTURE_TYPE_SUBMIT_INFO };
@@ -95,13 +98,15 @@ VkResult VK_Queue_p::Present(
 	std::vector<VkSwapchainKHR> vk_swapchains;
 	vk_swapchains.reserve(swapchains.size());
 	for (auto& chain : swapchains) {
-		vk_swapchains.push_back(chain->Handle());
+		if (chain != nullptr)
+			vk_swapchains.push_back(chain->Handle());
 	}
 
 	std::vector<VkSemaphore> vk_wait_semaphores;
 	vk_wait_semaphores.reserve(wait_semaphores.size());
 	for (auto& sem : wait_semaphores) {
-		vk_wait_semaphores.push_back(sem->Handle());
+		if (sem != nullptr)
+			vk_wait_semaphores.push_back(sem->Handle());
 	}
 
 	VkPresentInfoKHR present{ VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };

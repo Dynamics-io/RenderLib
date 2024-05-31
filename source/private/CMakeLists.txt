@@ -19,6 +19,7 @@ set(${PROJECT_NAME}_headers
 	vk_buffer.h
 	buffer_allocator.h
 	shader_depository.h
+	asset_store.h
 	instance.h
 	window.h
 	window_glfw.h
@@ -48,6 +49,7 @@ set(${PROJECT_NAME}_sources
 	vk_buffer.cpp
 	buffer_allocator.cpp
 	shader_depository.cpp
+	asset_store.cpp
 	window_glfw.cpp
 	renderer.cpp
 	
@@ -68,4 +70,5 @@ target_link_libraries(${PROJECT_NAME}
 		imgui
 		glm
 		spdlog
+		ktx
 )

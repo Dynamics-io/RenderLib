@@ -2,6 +2,8 @@
 
 #include "renderer.h"
 
+struct ktxTexture;
+
 namespace render_vk {
 
 	class VK_Physical_Device_p;
@@ -13,6 +15,7 @@ namespace render_vk {
 	class VK_CommandPool_p;
 	class VK_CommandBuffer_p;
 	class VK_Semaphore_p;
+	class Assets_Store_p;
 
 	class Texture_Loading_Renderer_p : public Renderer_p {
 	public:
@@ -37,6 +40,12 @@ namespace render_vk {
 		VK_Device_p* m_Device{ nullptr };
 		//VK_Queue_p* m_Queue{ nullptr };
 		VK_Swapchain_p* m_Swapchain{ nullptr };
+		Assets_Store_p* m_Assets_Store{ nullptr };
+
+		// Our objects
+		ktxTexture* m_texture;
+
+		void load_texture();
 
 	};
 
