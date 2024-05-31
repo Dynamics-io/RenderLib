@@ -257,6 +257,15 @@ bool Renderer_p::Finalize()
 
 	Dispose();
 
+	if (Is_Root()) {
+		destroy_per_frame();
+
+		LOGI("Disposing swapchain");
+		m_Swapchain->Dispose();
+
+		m_per_frame.clear();
+	}
+
 	LOGI("Disposing shader store");
 	m_shader_store->Dispose();
 
@@ -313,9 +322,6 @@ bool Renderer_p::Dispose()
 			break;
 		}
 	}
-
-	LOGI("Disposing swapchain");
-	m_Swapchain->Dispose();
 
 	return status;
 }
@@ -467,7 +473,7 @@ void Renderer_p::Setup_Framebuffers(VkRenderPass render_pass)
 	LOGI("Created {} swapchain framebuffers", render_vk::to_string(m_swapchain_framebuffers.size()));
 }
 
-void render_vk::Renderer_p::Destroy_Framebuffers(bool wait_idle)
+void Renderer_p::Destroy_Framebuffers(bool wait_idle)
 {
 	if (wait_idle) {
 		m_Device->Wait_Idle();
@@ -496,7 +502,7 @@ VK_Device_p* Renderer_p::Load_Device()
 VkResult Renderer_p::Submit_Command(VK_CommandBuffer_p* cmd)
 {
 	if (cmd == nullptr) {
-		return;
+		throw std::runtime_error("Command buffer null");
 	}
 
 	uint32_t swapchain_index = m_swapchain_index;
@@ -525,6 +531,25 @@ void Renderer_p::init_per_frame(int num)
 
 		m_per_frame[i].primary_command_buffer = m_Primary_Command_Pool->Create_CommandBuffer(false, 1);
 	}
+}
+
+void Renderer_p::destroy_per_frame()
+{
+
+	for (int i = 0; i < m_per_frame.size(); i++) {
+		m_per_frame[i].Queue_Submit_Fence->Dispose();
+		delete m_per_frame[i].Queue_Submit_Fence;
+		m_per_frame[i].Queue_Submit_Fence = nullptr;
+
+		m_per_frame[i].primary_command_buffer->Dispose();
+		delete m_per_frame[i].primary_command_buffer;
+		m_per_frame[i].primary_command_buffer = nullptr;
+
+	}
+
+	m_Primary_Command_Pool->Dispose();
+	delete m_Primary_Command_Pool;
+	m_Primary_Command_Pool = nullptr;
 }
 
 VkResult Renderer_p::acquire_next_image(uint32_t* image)

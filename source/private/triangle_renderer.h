@@ -71,13 +71,13 @@ namespace render_vk {
 		void init_render_pass();
 		void init_pipeline();
 
-		void destroy_per_frame();
+		//void destroy_per_frame();
 
 
 
 		//VkResult acquire_next_image(uint32_t* image);
 
-		VkResult render_triangle(uint32_t swapchain_index);
+		VkResult render_triangle();
 
 		//VkResult present_image(uint32_t swapchain_index);
 

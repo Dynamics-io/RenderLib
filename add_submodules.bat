@@ -1,1 +1,2 @@
-git submodule add https://github.com/nothings/stb third_party/stb
+git submodule add https://github.com/KhronosGroup/KTX-Software third_party/ktx
+pause

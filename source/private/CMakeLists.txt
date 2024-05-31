@@ -1,4 +1,4 @@
-project("RenderLib_private")
+project("RenderLib_core")
 
 set(${PROJECT_NAME}_headers
 	stdafx.h
@@ -25,7 +25,7 @@ set(${PROJECT_NAME}_headers
 	renderer.h
 	
 	triangle_renderer.h
-	
+	texture_loading_renderer.h
 )
 
 set(${PROJECT_NAME}_sources
@@ -52,9 +52,10 @@ set(${PROJECT_NAME}_sources
 	renderer.cpp
 	
 	triangle_renderer.cpp
+	texture_loading_renderer.cpp
 )
 
-add_library(RenderLib_private STATIC ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
+add_library(RenderLib_core STATIC ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
 
 # Link third party libraries
 target_link_libraries(${PROJECT_NAME} 

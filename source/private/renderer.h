@@ -22,6 +22,7 @@ namespace render_vk {
 	class VK_CommandBuffer_p;
 	class VK_Semaphore_p;
 	class VK_Fence_p;
+	class VK_Queue_p;
 
 	class Renderer_p {
 	public:
@@ -278,6 +279,8 @@ namespace render_vk {
 		bool set_default_device();
 
 		void init_per_frame(int num);
+
+		void destroy_per_frame();
 
 		VkResult acquire_next_image(uint32_t* image);
 

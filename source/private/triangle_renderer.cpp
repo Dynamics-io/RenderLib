@@ -19,8 +19,7 @@
 
 using namespace render_vk;
 
-
-render_vk::Triangle_Renderer_p::Triangle_Renderer_p()
+Triangle_Renderer_p::Triangle_Renderer_p()
 {
     Set_Name("Triangle Renderer");
 }
@@ -84,16 +83,11 @@ bool Triangle_Renderer_p::Step(double dt)
         return true;
     }*/
 
-    render_triangle(index);
-    VkResult present_res = present_image(index);
+    VkResult render_res = render_triangle();
 
-    // Handle Outdated error in present.
-    if (present_res == VK_SUBOPTIMAL_KHR || present_res == VK_ERROR_OUT_OF_DATE_KHR) {
-        Resize();
-    }
-    else if (present_res != VK_SUCCESS)
+    if (render_res != VK_SUCCESS)
     {
-        LOGE("Failed to present swapchain image.");
+        LOGE("Failed to render trainge.");
     }
 
     return true;
@@ -105,9 +99,9 @@ bool Triangle_Renderer_p::Cleanup()
 
     Destroy_Framebuffers(false);
 
-    destroy_per_frame();
+    //destroy_per_frame();
 
-    m_per_frame.clear();
+    //m_per_frame.clear();
 
     for (auto& sem : recycled_semaphores) {
         sem->Dispose();
@@ -153,7 +147,7 @@ void Triangle_Renderer_p::init_per_frame(int num)
     */
 }
 
-void render_vk::Triangle_Renderer_p::destroy_per_frame()
+/*void Triangle_Renderer_p::destroy_per_frame()
 {
     for (int i = 0; i < m_per_frame.size(); i++) {
         m_per_frame[i].Queue_Submit_Fence->Dispose();
@@ -168,7 +162,7 @@ void render_vk::Triangle_Renderer_p::destroy_per_frame()
         delete m_per_frame[i].Primary_Command_Pool;
         m_per_frame[i].Primary_Command_Pool = nullptr;
     }
-}
+}*/
 
 void Triangle_Renderer_p::init_render_pass()
 {
@@ -365,7 +359,7 @@ void render_vk::Triangle_Renderer_p::init_pipeline()
     return VK_SUCCESS;
 }*/
 
-VkResult Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
+VkResult Triangle_Renderer_p::render_triangle()
 {
     uint32_t swapchain_index = Get_Swapchain_Index();
 

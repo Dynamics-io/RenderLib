@@ -18,4 +18,4 @@ set(${PROJECT_NAME}_sources
 
 add_library(RenderLib STATIC ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
 
-target_link_libraries(RenderLib PUBLIC RenderLib_private)
+target_link_libraries(RenderLib PUBLIC RenderLib_core)
