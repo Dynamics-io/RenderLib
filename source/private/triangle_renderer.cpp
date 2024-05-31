@@ -29,12 +29,12 @@ bool Triangle_Renderer_p::Setup()
 {
     m_GPU = Get_GPU();
     m_Device = Get_Device();
-    m_Queue = m_Device->Get_Queue(Get_Graphics_Queue_Index(), 0);
+    //m_Queue = m_Device->Get_Queue(Get_Graphics_Queue_Index(), 0);
     m_Swapchain = Get_Swapchain();
     LOGI("Got root objects");
 
-    init_per_frame(m_Swapchain->Image_Count());
-    LOGI("Inited per frame");
+    //init_per_frame(m_Swapchain->Image_Count());
+    //LOGI("Inited per frame");
 
     init_render_pass();
     LOGI("Inited render pass");
@@ -71,9 +71,9 @@ bool Triangle_Renderer_p::Resize()
 
 bool Triangle_Renderer_p::Step(double dt)
 {
-    uint32_t index;
+    uint32_t index = Get_Swapchain_Index();
 
-    VkResult aquire_res = acquire_next_image(&index);
+    /*VkResult aquire_res = acquire_next_image(&index);
 
     if (aquire_res == VK_SUBOPTIMAL_KHR || aquire_res == VK_ERROR_OUT_OF_DATE_KHR) {
         Resize();
@@ -82,7 +82,7 @@ bool Triangle_Renderer_p::Step(double dt)
 
     if (aquire_res != VK_SUCCESS) {
         return true;
-    }
+    }*/
 
     render_triangle(index);
     VkResult present_res = present_image(index);
@@ -136,9 +136,9 @@ bool Triangle_Renderer_p::Cleanup()
 
 
 
-void render_vk::Triangle_Renderer_p::init_per_frame(int num)
+void Triangle_Renderer_p::init_per_frame(int num)
 {
-
+    /*
     m_per_frame.clear();
     m_per_frame.resize(num);
 
@@ -150,7 +150,7 @@ void render_vk::Triangle_Renderer_p::init_per_frame(int num)
 
         m_per_frame[i].primary_command_buffer = m_per_frame[i].Primary_Command_Pool->Create_CommandBuffer(false, 1);
     }
-
+    */
 }
 
 void render_vk::Triangle_Renderer_p::destroy_per_frame()
@@ -312,7 +312,7 @@ void render_vk::Triangle_Renderer_p::init_pipeline()
     m_frag_shader->Finalize();
 }
 
-VkResult Triangle_Renderer_p::acquire_next_image(uint32_t* image)
+/*VkResult Triangle_Renderer_p::acquire_next_image(uint32_t* image)
 {
     
     VK_Semaphore_p* acquire_semaphore;
@@ -363,14 +363,15 @@ VkResult Triangle_Renderer_p::acquire_next_image(uint32_t* image)
     m_per_frame[*image].Swapchain_Acquire_Semaphore = acquire_semaphore;
 
     return VK_SUCCESS;
-}
+}*/
 
-void Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
+VkResult Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
 {
+    uint32_t swapchain_index = Get_Swapchain_Index();
 
-    VK_Framebuffer_p* frame_buffer = Get_Swapchain_Framebuffer(swapchain_index);
+    VK_Framebuffer_p* frame_buffer = Get_Current_Swapchain_Framebuffer();
 
-    VK_CommandBuffer_p* cmd = m_per_frame[swapchain_index].primary_command_buffer;
+    VK_CommandBuffer_p* cmd = Get_Frame_Command_Buffer();
 
     cmd->Begin();
 
@@ -394,22 +395,24 @@ void Triangle_Renderer_p::render_triangle(uint32_t swapchain_index)
 
     VK_CHECK_THROW(cmd->End());
 
-    if (m_per_frame[swapchain_index].Swapchain_Release_Semaphore == nullptr) {
+    return Submit_Command(cmd);
+
+    /*if (m_per_frame[swapchain_index].Swapchain_Release_Semaphore == nullptr) {
         m_per_frame[swapchain_index].Swapchain_Release_Semaphore = m_Device->Create_Semaphore();
     }
 
     m_Queue->Submit(cmd, 
         m_per_frame[swapchain_index].Swapchain_Acquire_Semaphore, 
         m_per_frame[swapchain_index].Swapchain_Release_Semaphore, 
-        m_per_frame[swapchain_index].Queue_Submit_Fence);
+        m_per_frame[swapchain_index].Queue_Submit_Fence);*/
 
 
 }
 
-VkResult Triangle_Renderer_p::present_image(uint32_t swapchain_index)
+/*VkResult Triangle_Renderer_p::present_image(uint32_t swapchain_index)
 {
     return m_Queue->Present(m_Swapchain, swapchain_index, m_per_frame[swapchain_index].Swapchain_Release_Semaphore);
-}
+}*/
 
 
 

@@ -31,7 +31,7 @@ namespace render_vk {
 		bool Cleanup() override;
 
 	private:
-		struct PerFrame {
+		/*struct PerFrame {
 
 			VK_Fence_p* Queue_Submit_Fence;
 
@@ -42,13 +42,13 @@ namespace render_vk {
 			VK_Semaphore_p* Swapchain_Acquire_Semaphore;
 
 			VK_Semaphore_p* Swapchain_Release_Semaphore;
-		};
+		};*/
 
 
 		// References to root owned objects
 		VK_Physical_Device_p* m_GPU{nullptr};
 		VK_Device_p* m_Device{ nullptr };
-		VK_Queue_p* m_Queue{ nullptr };
+		//VK_Queue_p* m_Queue{ nullptr };
 		VK_Swapchain_p* m_Swapchain{ nullptr };
 
 		// our objects
@@ -60,7 +60,7 @@ namespace render_vk {
 
 		VkPipeline m_Pipeline{ VK_NULL_HANDLE };
 
-		std::vector<PerFrame> m_per_frame;
+		//std::vector<PerFrame> m_per_frame;
 
 		//std::vector<VK_Framebuffer_p*> m_swapchain_framebuffers;
 
@@ -75,11 +75,11 @@ namespace render_vk {
 
 
 
-		VkResult acquire_next_image(uint32_t* image);
+		//VkResult acquire_next_image(uint32_t* image);
 
-		void render_triangle(uint32_t swapchain_index);
+		VkResult render_triangle(uint32_t swapchain_index);
 
-		VkResult present_image(uint32_t swapchain_index);
+		//VkResult present_image(uint32_t swapchain_index);
 
 	};
 

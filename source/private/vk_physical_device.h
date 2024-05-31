@@ -2,6 +2,7 @@
 
 #include "vk_common.h"
 #include <vector>
+#include <string>
 
 namespace render_vk {
 
@@ -28,6 +29,13 @@ namespace render_vk {
 		VkSurfaceCapabilitiesKHR Get_Surface_Capabilities(VkSurfaceKHR surface);
 
 		std::vector<VkSurfaceFormatKHR> Get_Surface_Formats(VkSurfaceKHR surface);
+
+		VkFormat Get_Optimal_Depth_Format(bool depth_only = false,
+			const std::vector<VkFormat>& depth_format_priority_list = {
+				VK_FORMAT_D32_SFLOAT,
+				VK_FORMAT_D24_UNORM_S8_UINT,
+				VK_FORMAT_D16_UNORM }
+		);
 
 		bool Is_Extension_Supported(const std::string& requested_extension) const;
 

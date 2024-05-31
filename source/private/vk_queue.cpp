@@ -16,9 +16,9 @@ VK_Queue_p::VK_Queue_p(VkQueue queue) :
 
 }
 
-VkResult VK_Queue_p::Submit(VK_CommandBuffer_p* cmd_buffer, VK_Semaphore_p* wait_semaphore, VK_Semaphore_p* signal_semaphore, VK_Fence_p* fence)
+VkResult VK_Queue_p::Submit(VK_CommandBuffer_p* cmd_buffer, VK_Semaphore_p* wait_semaphore, VK_Semaphore_p* signal_semaphore, VK_Fence_p* fence, PipelineStageFlags stage)
 {
-	LOGI("Submit");
+	//LOGI("Submit");
 	std::vector<VK_CommandBuffer_p*> cmd_buffers;
 	cmd_buffers.push_back(cmd_buffer);
 
@@ -28,16 +28,17 @@ VkResult VK_Queue_p::Submit(VK_CommandBuffer_p* cmd_buffer, VK_Semaphore_p* wait
 	std::vector<VK_Semaphore_p*> signal_semaphores;
 	signal_semaphores.push_back(signal_semaphore);
 
-	return Submit(cmd_buffers, wait_semaphores, signal_semaphores, fence);
+	return Submit(cmd_buffers, wait_semaphores, signal_semaphores, fence, stage);
 }
 
 VkResult VK_Queue_p::Submit(
 	std::vector<VK_CommandBuffer_p*> cmd_buffers, 
 	std::vector<VK_Semaphore_p*> wait_semaphores, 
 	std::vector<VK_Semaphore_p*> signal_semaphores,
-	VK_Fence_p* fence)
+	VK_Fence_p* fence,
+	PipelineStageFlags stage)
 {
-	VkPipelineStageFlags wait_stage{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	VkPipelineStageFlags wait_stage = (VkPipelineStageFlags)stage;
 
 	std::vector<VkCommandBuffer> vk_buffers;
 	vk_buffers.reserve(cmd_buffers.size());

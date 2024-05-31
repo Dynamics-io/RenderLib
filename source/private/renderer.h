@@ -18,6 +18,10 @@ namespace render_vk {
 	class VK_Shader_p;
 	class VK_Framebuffer_p;
 	class Buffer_Allocator_p;
+	class VK_CommandPool_p;
+	class VK_CommandBuffer_p;
+	class VK_Semaphore_p;
+	class VK_Fence_p;
 
 	class Renderer_p {
 	public:
@@ -143,6 +147,14 @@ namespace render_vk {
 			return m_Swapchain;
 		}
 
+		uint32_t Get_Swapchain_Index() {
+			if (!Is_Root()) {
+				return m_Parent->Get_Swapchain_Index();
+			}
+			return m_swapchain_index;
+		}
+
+
 		VK_Framebuffer_p* Create_Swapchain_Framebuffer(VkRenderPass render_pass, int image_index);
 
 		VK_Shader_p* Get_Shader(std::string name);
@@ -175,10 +187,29 @@ namespace render_vk {
 		
 
 	protected:
+
+		struct PerFramePresent {
+
+			VK_Fence_p* Queue_Submit_Fence;
+
+			VK_CommandBuffer_p* primary_command_buffer;
+
+			VK_Semaphore_p* Swapchain_Acquire_Semaphore;
+
+			VK_Semaphore_p* Swapchain_Release_Semaphore;
+		};
+
 		VK_Device_p* Load_Device();
 
 		void Set_Name(std::string name) {
 			m_Name = name;
+		}
+
+		VK_CommandBuffer_p* Get_Frame_Command_Buffer() {
+			if (!Is_Root()) {
+				m_Parent->Get_Frame_Command_Buffer();
+			}
+			return m_per_frame[m_swapchain_index].primary_command_buffer;
 		}
 
 		virtual bool Setup() = 0;
@@ -192,6 +223,12 @@ namespace render_vk {
 		void Setup_Framebuffers(VkRenderPass render_pass);
 
 		void Destroy_Framebuffers(bool wait_idle = true);
+
+		VkResult Submit_Command(VK_CommandBuffer_p* cmd);
+
+		VK_Framebuffer_p* Get_Current_Swapchain_Framebuffer() {
+			return Get_Swapchain_Framebuffer(Get_Swapchain_Index());
+		}
 
 		VK_Framebuffer_p* Get_Swapchain_Framebuffer(int index) {
 			if (index >= m_swapchain_framebuffers.size()) {
@@ -213,6 +250,15 @@ namespace render_vk {
 		VK_Swapchain_p* m_Swapchain{ nullptr };
 		Shader_Depository_p* m_shader_store{ nullptr };
 		Buffer_Allocator_p* m_allocator{ nullptr };
+		std::vector<PerFramePresent> m_per_frame;
+		VK_CommandPool_p* m_Primary_Command_Pool{ nullptr };
+		uint32_t m_swapchain_index{ 0 };
+		VK_Queue_p* m_Graphics_Queue{ nullptr };
+
+		/// A set of semaphores that can be reused.
+		std::vector<VK_Semaphore_p*> m_recycled_aquire_semaphores;
+
+
 		bool m_Is_Finalized{ false };
 		// End Root-only fields.
 
@@ -230,6 +276,10 @@ namespace render_vk {
 		bool init(Renderer_p* parent, ChildRendererBuildInfo info);
 
 		bool set_default_device();
+
+		void init_per_frame(int num);
+
+		VkResult acquire_next_image(uint32_t* image);
 
 	};
 

@@ -55,6 +55,48 @@ struct ImageViewBuildInfo {
 
 };
 
+//
+// pipeline properties
+//
+
+typedef enum PipelineStageFlagBits {
+    PIPELINE_STAGE_TOP_OF_PIPE_BIT = 0x00000001,
+    PIPELINE_STAGE_DRAW_INDIRECT_BIT = 0x00000002,
+    PIPELINE_STAGE_VERTEX_INPUT_BIT = 0x00000004,
+    PIPELINE_STAGE_VERTEX_SHADER_BIT = 0x00000008,
+    PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT = 0x00000010,
+    PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT = 0x00000020,
+    PIPELINE_STAGE_GEOMETRY_SHADER_BIT = 0x00000040,
+    PIPELINE_STAGE_FRAGMENT_SHADER_BIT = 0x00000080,
+    PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT = 0x00000100,
+    PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT = 0x00000200,
+    PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT = 0x00000400,
+    PIPELINE_STAGE_COMPUTE_SHADER_BIT = 0x00000800,
+    PIPELINE_STAGE_TRANSFER_BIT = 0x00001000,
+    PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT = 0x00002000,
+    PIPELINE_STAGE_HOST_BIT = 0x00004000,
+    PIPELINE_STAGE_ALL_GRAPHICS_BIT = 0x00008000,
+    PIPELINE_STAGE_ALL_COMMANDS_BIT = 0x00010000,
+    PIPELINE_STAGE_NONE = 0,
+    PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT = 0x01000000,
+    PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT = 0x00040000,
+    PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR = 0x02000000,
+    PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR = 0x00200000,
+    PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT = 0x00800000,
+    PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = 0x00400000,
+    PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV = 0x00020000,
+    PIPELINE_STAGE_TASK_SHADER_BIT_EXT = 0x00080000,
+    PIPELINE_STAGE_MESH_SHADER_BIT_EXT = 0x00100000,
+    PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV = VK_PIPELINE_STAGE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR,
+    PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_NV = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
+    PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_NV = VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
+    PIPELINE_STAGE_TASK_SHADER_BIT_NV = VK_PIPELINE_STAGE_TASK_SHADER_BIT_EXT,
+    PIPELINE_STAGE_MESH_SHADER_BIT_NV = VK_PIPELINE_STAGE_MESH_SHADER_BIT_EXT,
+    PIPELINE_STAGE_NONE_KHR = VK_PIPELINE_STAGE_NONE,
+    PIPELINE_STAGE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
+} PipelineStageFlagBits;
+typedef uint32_t PipelineStageFlags;
+
 
 //
 // Command Pool properties
@@ -84,36 +126,36 @@ typedef enum PipelineBindPoint {
 
 
 typedef enum BufferUsageFlagBits {
-    TRANSFER_SRC_BIT = 0x00000001,
-    TRANSFER_DST_BIT = 0x00000002,
-    UNIFORM_TEXEL_BUFFER_BIT = 0x00000004,
-    STORAGE_TEXEL_BUFFER_BIT = 0x00000008,
-    UNIFORM_BUFFER_BIT = 0x00000010,
-    STORAGE_BUFFER_BIT = 0x00000020,
-    INDEX_BUFFER_BIT = 0x00000040,
-    VERTEX_BUFFER_BIT = 0x00000080,
-    INDIRECT_BUFFER_BIT = 0x00000100,
-    SHADER_DEVICE_ADDRESS_BIT = 0x00020000,
-    VIDEO_DECODE_SRC_BIT_KHR = 0x00002000,
-    VIDEO_DECODE_DST_BIT_KHR = 0x00004000,
-    TRANSFORM_FEEDBACK_BUFFER_BIT_EXT = 0x00000800,
-    TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT = 0x00001000,
-    CONDITIONAL_RENDERING_BIT_EXT = 0x00000200,
-    EXECUTION_GRAPH_SCRATCH_BIT_AMDX = 0x02000000,
-    ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR = 0x00080000,
-    ACCELERATION_STRUCTURE_STORAGE_BIT_KHR = 0x00100000,
-    SHADER_BINDING_TABLE_BIT_KHR = 0x00000400,
-    VIDEO_ENCODE_DST_BIT_KHR = 0x00008000,
-    VIDEO_ENCODE_SRC_BIT_KHR = 0x00010000,
-    SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT = 0x00200000,
-    RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT = 0x00400000,
-    PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT = 0x04000000,
-    MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT = 0x00800000,
-    MICROMAP_STORAGE_BIT_EXT = 0x01000000,
-    RAY_TRACING_BIT_NV = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR,
-    SHADER_DEVICE_ADDRESS_BIT_EXT = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-    SHADER_DEVICE_ADDRESS_BIT_KHR = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
-    FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
+    BUFFER_USAGE_TRANSFER_SRC_BIT = 0x00000001,
+    BUFFER_USAGE_TRANSFER_DST_BIT = 0x00000002,
+    BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT = 0x00000004,
+    BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT = 0x00000008,
+    BUFFER_USAGE_UNIFORM_BUFFER_BIT = 0x00000010,
+    BUFFER_USAGE_STORAGE_BUFFER_BIT = 0x00000020,
+    BUFFER_USAGE_INDEX_BUFFER_BIT = 0x00000040,
+    BUFFER_USAGE_VERTEX_BUFFER_BIT = 0x00000080,
+    BUFFER_USAGE_INDIRECT_BUFFER_BIT = 0x00000100,
+    BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT = 0x00020000,
+    BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR = 0x00002000,
+    BUFFER_USAGE_VIDEO_DECODE_DST_BIT_KHR = 0x00004000,
+    BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT = 0x00000800,
+    BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT = 0x00001000,
+    BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT = 0x00000200,
+    BUFFER_USAGE_EXECUTION_GRAPH_SCRATCH_BIT_AMDX = 0x02000000,
+    BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR = 0x00080000,
+    BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR = 0x00100000,
+    BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR = 0x00000400,
+    BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR = 0x00008000,
+    BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR = 0x00010000,
+    BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT = 0x00200000,
+    BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT = 0x00400000,
+    BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT = 0x04000000,
+    BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT = 0x00800000,
+    BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT = 0x01000000,
+    BUFFER_USAGE_RAY_TRACING_BIT_NV = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR,
+    BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_EXT = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+    BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT_KHR = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+    BUFFER_USAGE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
 } BufferUsageFlagBits;
 typedef uint32_t BufferUsageFlags;
 
@@ -122,32 +164,32 @@ typedef enum MemoryUsage
     /** No intended memory usage specified.
     Use other members of VmaAllocationCreateInfo to specify your requirements.
     */
-    VMA_MEMORY_USAGE_UNKNOWN = 0,
+    MEMORY_USAGE_UNKNOWN = 0,
     /**
     \deprecated Obsolete, preserved for backward compatibility.
     Prefers `VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`.
     */
-    VMA_MEMORY_USAGE_GPU_ONLY = 1,
+    MEMORY_USAGE_GPU_ONLY = 1,
     /**
     \deprecated Obsolete, preserved for backward compatibility.
     Guarantees `VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT` and `VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`.
     */
-    VMA_MEMORY_USAGE_CPU_ONLY = 2,
+    MEMORY_USAGE_CPU_ONLY = 2,
     /**
     \deprecated Obsolete, preserved for backward compatibility.
     Guarantees `VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`, prefers `VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`.
     */
-    VMA_MEMORY_USAGE_CPU_TO_GPU = 3,
+    MEMORY_USAGE_CPU_TO_GPU = 3,
     /**
     \deprecated Obsolete, preserved for backward compatibility.
     Guarantees `VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`, prefers `VK_MEMORY_PROPERTY_HOST_CACHED_BIT`.
     */
-    VMA_MEMORY_USAGE_GPU_TO_CPU = 4,
+    MEMORY_USAGE_GPU_TO_CPU = 4,
     /**
     \deprecated Obsolete, preserved for backward compatibility.
     Prefers not `VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`.
     */
-    VMA_MEMORY_USAGE_CPU_COPY = 5,
+    MEMORY_USAGE_CPU_COPY = 5,
     /**
     Lazily allocated GPU memory having `VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`.
     Exists mostly on mobile platforms. Using it on desktop PC or other GPUs with no such memory type present will fail the allocation.
@@ -156,7 +198,7 @@ typedef enum MemoryUsage
 
     Allocations with this usage are always created as dedicated - it implies #VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT.
     */
-    VMA_MEMORY_USAGE_GPU_LAZILY_ALLOCATED = 6,
+    MEMORY_USAGE_GPU_LAZILY_ALLOCATED = 6,
     /**
     Selects best memory type automatically.
     This flag is recommended for most common use cases.
@@ -169,7 +211,7 @@ typedef enum MemoryUsage
     vmaCreateBuffer(), vmaCreateImage(), vmaFindMemoryTypeIndexForBufferInfo(), vmaFindMemoryTypeIndexForImageInfo()
     and not with generic memory allocation functions.
     */
-    VMA_MEMORY_USAGE_AUTO = 7,
+    MEMORY_USAGE_AUTO = 7,
     /**
     Selects best memory type automatically with preference for GPU (device) memory.
 
@@ -181,7 +223,7 @@ typedef enum MemoryUsage
     vmaCreateBuffer(), vmaCreateImage(), vmaFindMemoryTypeIndexForBufferInfo(), vmaFindMemoryTypeIndexForImageInfo()
     and not with generic memory allocation functions.
     */
-    VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE = 8,
+    MEMORY_USAGE_AUTO_PREFER_DEVICE = 8,
     /**
     Selects best memory type automatically with preference for CPU (host) memory.
 
@@ -193,9 +235,9 @@ typedef enum MemoryUsage
     vmaCreateBuffer(), vmaCreateImage(), vmaFindMemoryTypeIndexForBufferInfo(), vmaFindMemoryTypeIndexForImageInfo()
     and not with generic memory allocation functions.
     */
-    VMA_MEMORY_USAGE_AUTO_PREFER_HOST = 9,
+    MEMORY_USAGE_AUTO_PREFER_HOST = 9,
 
-    VMA_MEMORY_USAGE_MAX_ENUM = 0x7FFFFFFF
+    MEMORY_USAGE_MAX_ENUM = 0x7FFFFFFF
 } MemoryUsage;
 
 typedef enum AllocationCreateFlagBits
@@ -207,7 +249,7 @@ typedef enum AllocationCreateFlagBits
     If you use this flag while creating a buffer or an image, `VkMemoryDedicatedAllocateInfo`
     structure is applied if possible.
     */
-    VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT = 0x00000001,
+    ALLOCATION_CREATE_DEDICATED_MEMORY_BIT = 0x00000001,
 
     /** \brief Set this flag to only try to allocate from existing `VkDeviceMemory` blocks and never create new such block.
 
@@ -217,7 +259,7 @@ typedef enum AllocationCreateFlagBits
     You should not use #VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT and
     #VMA_ALLOCATION_CREATE_NEVER_ALLOCATE_BIT at the same time. It makes no sense.
     */
-    VMA_ALLOCATION_CREATE_NEVER_ALLOCATE_BIT = 0x00000002,
+    ALLOCATION_CREATE_NEVER_ALLOCATE_BIT = 0x00000002,
     /** \brief Set this flag to use a memory that will be persistently mapped and retrieve pointer to it.
 
     Pointer to mapped memory will be returned through VmaAllocationInfo::pMappedData.
@@ -228,7 +270,7 @@ typedef enum AllocationCreateFlagBits
     (`DEVICE_LOCAL`) and still want to map it directly if possible on platforms that
     support it (e.g. Intel GPU).
     */
-    VMA_ALLOCATION_CREATE_MAPPED_BIT = 0x00000004,
+    ALLOCATION_CREATE_MAPPED_BIT = 0x00000004,
     /** \deprecated Preserved for backward compatibility. Consider using vmaSetAllocationName() instead.
 
     Set this flag to treat VmaAllocationCreateInfo::pUserData as pointer to a
@@ -236,12 +278,12 @@ typedef enum AllocationCreateFlagBits
     string is made and stored in allocation's `pName`. The string is automatically
     freed together with the allocation. It is also used in vmaBuildStatsString().
     */
-    VMA_ALLOCATION_CREATE_USER_DATA_COPY_STRING_BIT = 0x00000020,
+    ALLOCATION_CREATE_USER_DATA_COPY_STRING_BIT = 0x00000020,
     /** Allocation will be created from upper stack in a double stack pool.
 
     This flag is only allowed for custom pools created with #VMA_POOL_CREATE_LINEAR_ALGORITHM_BIT flag.
     */
-    VMA_ALLOCATION_CREATE_UPPER_ADDRESS_BIT = 0x00000040,
+    ALLOCATION_CREATE_UPPER_ADDRESS_BIT = 0x00000040,
     /** Create both buffer/image and allocation, but don't bind them together.
     It is useful when you want to bind yourself to do some more advanced binding, e.g. using some extensions.
     The flag is meaningful only with functions that bind by default: vmaCreateBuffer(), vmaCreateImage().
@@ -251,17 +293,17 @@ typedef enum AllocationCreateFlagBits
     through `VkMemoryDedicatedAllocateInfoKHR` structure in case the allocation ends up in its own memory block,
     use also flag #VMA_ALLOCATION_CREATE_CAN_ALIAS_BIT.
     */
-    VMA_ALLOCATION_CREATE_DONT_BIND_BIT = 0x00000080,
+    ALLOCATION_CREATE_DONT_BIND_BIT = 0x00000080,
     /** Create allocation only if additional device memory required for it, if any, won't exceed
     memory budget. Otherwise return `VK_ERROR_OUT_OF_DEVICE_MEMORY`.
     */
-    VMA_ALLOCATION_CREATE_WITHIN_BUDGET_BIT = 0x00000100,
+    ALLOCATION_CREATE_WITHIN_BUDGET_BIT = 0x00000100,
     /** \brief Set this flag if the allocated memory will have aliasing resources.
 
     Usage of this flag prevents supplying `VkMemoryDedicatedAllocateInfoKHR` when #VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT is specified.
     Otherwise created dedicated memory will not be suitable for aliasing resources, resulting in Vulkan Validation Layer errors.
     */
-    VMA_ALLOCATION_CREATE_CAN_ALIAS_BIT = 0x00000200,
+    ALLOCATION_CREATE_CAN_ALIAS_BIT = 0x00000200,
     /**
     Requests possibility to map the allocation (using vmaMapMemory() or #VMA_ALLOCATION_CREATE_MAPPED_BIT).
 
@@ -277,7 +319,7 @@ typedef enum AllocationCreateFlagBits
     Watch out for implicit reads introduced by doing e.g. `pMappedData[i] += x;`
     Better prepare your data in a local variable and `memcpy()` it to the mapped pointer all at once.
     */
-    VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT = 0x00000400,
+    ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT = 0x00000400,
     /**
     Requests possibility to map the allocation (using vmaMapMemory() or #VMA_ALLOCATION_CREATE_MAPPED_BIT).
 
@@ -289,7 +331,7 @@ typedef enum AllocationCreateFlagBits
     Declares that mapped memory can be read, written, and accessed in random order,
     so a `HOST_CACHED` memory type is preferred.
     */
-    VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT = 0x00000800,
+    ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT = 0x00000800,
     /**
     Together with #VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT or #VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT,
     it says that despite request for host access, a not-`HOST_VISIBLE` memory type can be selected
@@ -301,43 +343,43 @@ typedef enum AllocationCreateFlagBits
     To prepare for this possibility, don't forget to add appropriate flags like
     `VK_BUFFER_USAGE_TRANSFER_DST_BIT`, `VK_BUFFER_USAGE_TRANSFER_SRC_BIT` to the parameters of created buffer or image.
     */
-    VMA_ALLOCATION_CREATE_HOST_ACCESS_ALLOW_TRANSFER_INSTEAD_BIT = 0x00001000,
+    ALLOCATION_CREATE_HOST_ACCESS_ALLOW_TRANSFER_INSTEAD_BIT = 0x00001000,
     /** Allocation strategy that chooses smallest possible free range for the allocation
     to minimize memory usage and fragmentation, possibly at the expense of allocation time.
     */
-    VMA_ALLOCATION_CREATE_STRATEGY_MIN_MEMORY_BIT = 0x00010000,
+    ALLOCATION_CREATE_STRATEGY_MIN_MEMORY_BIT = 0x00010000,
     /** Allocation strategy that chooses first suitable free range for the allocation -
     not necessarily in terms of the smallest offset but the one that is easiest and fastest to find
     to minimize allocation time, possibly at the expense of allocation quality.
     */
-    VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT = 0x00020000,
+    ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT = 0x00020000,
     /** Allocation strategy that chooses always the lowest offset in available space.
     This is not the most efficient strategy but achieves highly packed data.
     Used internally by defragmentation, not recommended in typical usage.
     */
-    VMA_ALLOCATION_CREATE_STRATEGY_MIN_OFFSET_BIT = 0x00040000,
+    ALLOCATION_CREATE_STRATEGY_MIN_OFFSET_BIT = 0x00040000,
     /** Alias to #VMA_ALLOCATION_CREATE_STRATEGY_MIN_MEMORY_BIT.
     */
-    VMA_ALLOCATION_CREATE_STRATEGY_BEST_FIT_BIT = VMA_ALLOCATION_CREATE_STRATEGY_MIN_MEMORY_BIT,
+    ALLOCATION_CREATE_STRATEGY_BEST_FIT_BIT = VMA_ALLOCATION_CREATE_STRATEGY_MIN_MEMORY_BIT,
     /** Alias to #VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT.
     */
-    VMA_ALLOCATION_CREATE_STRATEGY_FIRST_FIT_BIT = VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT,
+    ALLOCATION_CREATE_STRATEGY_FIRST_FIT_BIT = VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT,
     /** A bit mask to extract only `STRATEGY` bits from entire set of flags.
     */
-    VMA_ALLOCATION_CREATE_STRATEGY_MASK =
-    VMA_ALLOCATION_CREATE_STRATEGY_MIN_MEMORY_BIT |
-    VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT |
-    VMA_ALLOCATION_CREATE_STRATEGY_MIN_OFFSET_BIT,
+    ALLOCATION_CREATE_STRATEGY_MASK =
+    ALLOCATION_CREATE_STRATEGY_MIN_MEMORY_BIT |
+    ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT |
+    ALLOCATION_CREATE_STRATEGY_MIN_OFFSET_BIT,
 
-    VMA_ALLOCATION_CREATE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
+    ALLOCATION_CREATE_FLAG_BITS_MAX_ENUM = 0x7FFFFFFF
 } AllocationCreateFlagBits;
 /// See #VmaAllocationCreateFlagBits.
 typedef uint32_t AllocationCreateFlags;
 
 struct BufferBuildInfo {
     uint64_t Size{ 0 };
-    BufferUsageFlags Usage{ BufferUsageFlagBits::FLAG_BITS_MAX_ENUM };
-    MemoryUsage Memory_Usage{ MemoryUsage::VMA_MEMORY_USAGE_AUTO };
-    AllocationCreateFlags Allocation_Flags{ AllocationCreateFlagBits::VMA_ALLOCATION_CREATE_MAPPED_BIT | AllocationCreateFlagBits::VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT };
+    BufferUsageFlags Usage{ BufferUsageFlagBits::BUFFER_USAGE_FLAG_BITS_MAX_ENUM };
+    MemoryUsage Memory_Usage{ MemoryUsage::MEMORY_USAGE_AUTO };
+    AllocationCreateFlags Allocation_Flags{ AllocationCreateFlagBits::ALLOCATION_CREATE_MAPPED_BIT | AllocationCreateFlagBits::ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT };
     std::vector<uint32_t> Queue_Family_Indices{};
 };

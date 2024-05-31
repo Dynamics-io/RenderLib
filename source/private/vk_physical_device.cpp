@@ -9,6 +9,16 @@
 
 using namespace render_vk;
 
+
+namespace {
+	bool is_depth_only_format(VkFormat format)
+	{
+		return format == VK_FORMAT_D16_UNORM ||
+			format == VK_FORMAT_D32_SFLOAT;
+	}
+
+}
+
 VK_Physical_Device_p::VK_Physical_Device_p(Instance_p* instance, VkPhysicalDevice device) :
 	m_Instance { instance },
 	m_device {device}
@@ -67,6 +77,31 @@ std::vector<VkSurfaceFormatKHR> VK_Physical_Device_p::Get_Surface_Formats(VkSurf
 	VK_CHECK_RET(vkGetPhysicalDeviceSurfaceFormatsKHR(m_device, surface, &surface_format_count, supported_surface_formats.data()), supported_surface_formats);
 
 	return supported_surface_formats;
+}
+
+VkFormat VK_Physical_Device_p::Get_Optimal_Depth_Format(bool depth_only, const std::vector<VkFormat>& depth_format_priority_list)
+{
+	VkFormat depth_format{VK_FORMAT_UNDEFINED};
+
+	for (auto& format : depth_format_priority_list) {
+		if (depth_only && !is_depth_only_format(format)) {
+			continue;
+		}
+
+		VkFormatProperties properties;
+		vkGetPhysicalDeviceFormatProperties(m_device, format, &properties);
+
+		if (properties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) {
+			depth_format = format;
+			break;
+		}
+	}
+
+	if (depth_format == VK_FORMAT_UNDEFINED) {
+		throw std::runtime_error("No suitable depth format could be determined");
+	}
+
+	return depth_format;
 }
 
 bool VK_Physical_Device_p::Is_Extension_Supported(const std::string& requested_extension) const

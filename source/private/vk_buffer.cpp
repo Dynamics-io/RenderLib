@@ -5,6 +5,10 @@
 #include "buffer_allocator.h"
 
 #include <algorithm>
+#include <assert.h>
+
+#define VMA_IMPLEMENTATION
+#include <vk_mem_alloc.h>
 
 using namespace render_vk;
 
@@ -70,8 +74,8 @@ VK_Buffer_p* VK_Buffer_p::Create_Staging_Buffer(uint64_t size, const void* data)
 {
 	BufferBuildInfo info;
 	info.Size = size;
-	info.Allocation_Flags = VMA_ALLOCATION_CREATE_MAPPED_BIT | VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
-	info.Usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+	info.Allocation_Flags = ALLOCATION_CREATE_MAPPED_BIT | ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT;
+	info.Usage = BUFFER_USAGE_TRANSFER_SRC_BIT;
 
 	VK_Buffer_p* buffer = new VK_Buffer_p(m_Device, info);
 	

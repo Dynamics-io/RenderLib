@@ -10,6 +10,11 @@
 #include "vk_framebuffer.h"
 #include "shader_depository.h"
 #include "buffer_allocator.h"
+#include "vk_command_pool.h"
+#include "vk_command_buffer.h"
+#include "vk_fence.h"
+#include "vk_semaphore.h"
+#include "vk_queue.h"
 
 using namespace render_vk;
 
@@ -136,7 +141,12 @@ bool Renderer_p::Build()
 
 	bool status = true;
 
-	m_Swapchain = m_Device->Create_Swapchain(m_Surface);
+	if (Is_Root()) {
+		m_Graphics_Queue = m_Device->Get_Queue(Get_Graphics_Queue_Index(), 0);
+		m_Swapchain = m_Device->Create_Swapchain(m_Surface);
+
+		init_per_frame(m_Swapchain->Image_Count());
+	}
 
 	for (const auto& child : m_child_renderers) {
 		status &= child->Build();
@@ -332,10 +342,7 @@ bool Renderer_p::Update(double dt)
 		return false;
 	}
 
-	status &= Step(dt);
-
 	if (Is_Root()) {
-
 
 		if (!Is_Headless()) {
 			m_Window->process_events();
@@ -346,6 +353,35 @@ bool Renderer_p::Update(double dt)
 		}
 
 
+		uint32_t index;
+
+		VkResult aquire_res = acquire_next_image(&index);
+
+		if (aquire_res == VK_SUBOPTIMAL_KHR || aquire_res == VK_ERROR_OUT_OF_DATE_KHR) {
+			Resize();
+			aquire_res = acquire_next_image(&index);
+		}
+
+		if (aquire_res != VK_SUCCESS) {
+			return true;
+		}
+
+		m_swapchain_index = index;
+	}
+
+	status &= Step(dt);
+
+	if (Is_Root()) {
+		VkResult present_res = m_Graphics_Queue->Present(m_Swapchain, m_swapchain_index, m_per_frame[m_swapchain_index].Swapchain_Release_Semaphore);
+
+		// Handle Outdated error in present.
+		if (present_res == VK_SUBOPTIMAL_KHR || present_res == VK_ERROR_OUT_OF_DATE_KHR) {
+			Resize();
+		}
+		else if (present_res != VK_SUCCESS)
+		{
+			LOGE("Failed to present swapchain image.");
+		}
 	}
 
 	if (!status) {
@@ -377,7 +413,7 @@ bool Renderer_p::set_default_device()
 			VkBool32 supports_present = Is_Headless() ? VK_FALSE : device.Get_Physical_Device_Surface_Support(m_Surface, i);
 			
 			// Find a queue family which supports graphics and presentation.
-			if ((queue_family_properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) && (supports_present || Is_Headless()))
+			if ((queue_family_properties[i].queueFlags & (VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT)) && (supports_present || Is_Headless()))
 			{
 				m_graphics_queue_index = i;
 				break;
@@ -388,8 +424,11 @@ bool Renderer_p::set_default_device()
 
 	if (m_graphics_queue_index < 0)
 	{
+		LOGE("Failed to find graphics queue");
 		return false;
 	}
+
+	LOGI("Found device graphics queue: {}", render_vk::to_string(m_graphics_queue_index));
 
 	std::vector<VkExtensionProperties> device_extensions = device.Get_Device_Extension_Properties();
 
@@ -452,6 +491,92 @@ VK_Device_p* Renderer_p::Load_Device()
 {
 	m_Device = m_PhysicalDevice.Create_Device(m_graphics_queue_index, 1, m_BuildInfo.Device_Required_Extensions);
 	return m_Device;
+}
+
+VkResult Renderer_p::Submit_Command(VK_CommandBuffer_p* cmd)
+{
+	if (cmd == nullptr) {
+		return;
+	}
+
+	uint32_t swapchain_index = m_swapchain_index;
+
+	if (m_per_frame[m_swapchain_index].Swapchain_Release_Semaphore == nullptr) {
+		m_per_frame[m_swapchain_index].Swapchain_Release_Semaphore = m_Device->Create_Semaphore();
+	}
+
+	return m_Graphics_Queue->Submit(cmd,
+		m_per_frame[m_swapchain_index].Swapchain_Acquire_Semaphore,
+		m_per_frame[m_swapchain_index].Swapchain_Release_Semaphore,
+		m_per_frame[m_swapchain_index].Queue_Submit_Fence);
+
+}
+
+void Renderer_p::init_per_frame(int num)
+{
+	m_per_frame.clear();
+	m_per_frame.resize(num);
+
+	m_Primary_Command_Pool = m_Device->Create_Command_Pool(Get_Graphics_Queue_Index(), CommandPoolCreateFlagBits::CREATE_TRANSIENT_BIT);
+
+	for (int i = 0; i < num; i++) {
+
+		m_per_frame[i].Queue_Submit_Fence = m_Device->Create_Fence(true);
+
+		m_per_frame[i].primary_command_buffer = m_Primary_Command_Pool->Create_CommandBuffer(false, 1);
+	}
+}
+
+VkResult Renderer_p::acquire_next_image(uint32_t* image)
+{
+	VK_Semaphore_p* acquire_semaphore;
+	if (m_recycled_aquire_semaphores.empty()) {
+		acquire_semaphore = m_Device->Create_Semaphore();
+	}
+	else {
+		acquire_semaphore = m_recycled_aquire_semaphores.back();
+		m_recycled_aquire_semaphores.pop_back();
+	}
+
+	VkResult res = m_Swapchain->Acquire_Next_Image_Index(UINT64_MAX, acquire_semaphore, nullptr, image);
+
+	if (res != VK_SUCCESS) {
+		m_recycled_aquire_semaphores.push_back(acquire_semaphore);
+		return res;
+	}
+
+	if (*image >= m_Swapchain->Image_Count()) {
+		throw std::runtime_error("Aquired image out of bounds");
+	}
+
+
+	// If we have outstanding fences for this swapchain image, wait for them to complete first.
+	// After begin frame returns, it is safe to reuse or delete resources which
+	// were used previously.
+	//
+	// We wait for fences which completes N frames earlier, so we do not stall,
+	// waiting for all GPU work to complete before this returns.
+	// Normally, this doesn't really block at all,
+	// since we're waiting for old frames to have been completed, but just in case.
+	if (m_per_frame[*image].Queue_Submit_Fence != nullptr) {
+		m_per_frame[*image].Queue_Submit_Fence->Wait();
+		m_per_frame[*image].Queue_Submit_Fence->Reset();
+	}
+
+	if (m_Primary_Command_Pool != nullptr) {
+		m_Primary_Command_Pool->Reset();
+	}
+
+	// Recycle the old semaphore back into the semaphore manager.
+	VK_Semaphore_p* old_aquire_semaphore = m_per_frame[*image].Swapchain_Acquire_Semaphore;
+
+	if (old_aquire_semaphore != nullptr) {
+		m_recycled_aquire_semaphores.push_back(old_aquire_semaphore);
+	}
+
+	m_per_frame[*image].Swapchain_Acquire_Semaphore = acquire_semaphore;
+
+	return VK_SUCCESS;
 }
 
 
